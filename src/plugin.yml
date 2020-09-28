@@ -1,0 +1,11 @@
+name: HyperiorCore_by_Groodian
+version: 3.0
+author: Groodian
+main: de.groodian.hyperiorcore.main.Main
+
+loadbefore: [MinecraftParty_by_Groodian, Lobby_by_Groodian, Cosmetics_by_Groodian]
+
+commands:
+   hyperiorranks:
+      description: Alles rund um Raenge
+      aliases: [hr, ranks]
