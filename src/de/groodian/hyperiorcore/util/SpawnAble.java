@@ -11,7 +11,9 @@ import java.util.Map;
 
 public abstract class SpawnAble {
 
-    public static List<SpawnAble> spawnAbles = new ArrayList<>();;
+    public static List<SpawnAble> spawnAbles = new ArrayList<>();
+    private static int MAX_DISTANCE = 50;
+    private static int RESPAWN_TIME = 120000;
 
     private List<Player> showFor;
     private Map<Player, Long> isSetFor;
@@ -26,29 +28,33 @@ public abstract class SpawnAble {
         showFor = new ArrayList<>();
         isSetFor = new HashMap<>();
 
-        if(showAll) {
+        spawnAbles.add(this);
+
+        if (showAll) {
             showAll();
         }
     }
 
     public void show(Player player) {
-        if(!showFor.contains(player)) {
+        if (!showFor.contains(player)) {
             showFor.add(player);
         }
-        spawnFor(player);
+        if (player.getLocation().distance(location) < MAX_DISTANCE) {
+            spawnFor(player);
+        }
     }
 
     public void hide(Player player) {
-        if(showFor.contains(player)) {
+        if (showFor.contains(player)) {
             showFor.remove(player);
         }
         destroyFor(player);
     }
 
     private void spawnFor(Player player) {
-        if(!isSetFor.containsKey(player)) {
+        if (!isSetFor.containsKey(player)) {
             isSetFor.put(player, System.currentTimeMillis());
-            System.out.println("spawned for: " + player.getName());
+            //System.out.println("spawned for: " + player.getName());
             handleSpawnFor(player);
         }
     }
@@ -56,9 +62,9 @@ public abstract class SpawnAble {
     protected abstract void handleSpawnFor(Player player);
 
     private void destroyFor(Player player) {
-        if(isSetFor.containsKey(player)) {
+        if (isSetFor.containsKey(player)) {
             isSetFor.remove(player);
-            System.out.println("destroyed for: " + player.getName());
+            //System.out.println("destroyed for: " + player.getName());
             handleDestroyFor(player);
         }
     }
@@ -83,19 +89,27 @@ public abstract class SpawnAble {
     }
 
     public void update() {
-        for(Player player: showFor) {
-            if(player.getLocation().distance(location) < 70) {
-                if(isSetFor.containsKey(player)) {
-                    if((System.currentTimeMillis()- isSetFor.get(player)) > 120000) {
-                        destroyFor(player);
-                        spawnFor(player);
-                    }
-                } else {
+        for (Player player : showFor) {
+            updateFor(player);
+        }
+    }
+
+    public void updateFor(Player player) {
+        updateFor(player, player.getLocation());
+    }
+
+    public void updateFor(Player player, Location playerLocation) {
+        if (playerLocation.distance(location) < MAX_DISTANCE) {
+            if (isSetFor.containsKey(player)) {
+                if ((System.currentTimeMillis() - isSetFor.get(player)) > RESPAWN_TIME) {
+                    destroyFor(player);
                     spawnFor(player);
                 }
             } else {
-                destroyFor(player);
+                spawnFor(player);
             }
+        } else {
+            destroyFor(player);
         }
     }
 

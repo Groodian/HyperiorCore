@@ -57,6 +57,7 @@ public class Main extends JavaPlugin {
 
         day();
         killAllMobs();
+        updateSpawnAbles();
 
         Output.send(PREFIX + "§aGeladen!");
     }

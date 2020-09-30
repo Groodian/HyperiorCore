@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class SpawnAbleListener implements Listener {
 
@@ -24,6 +25,14 @@ public class SpawnAbleListener implements Listener {
         Player player = e.getPlayer();
         for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
             spawnAble.hide(player);
+        }
+    }
+
+    @EventHandler
+    public void handleTeleport(PlayerTeleportEvent e) {
+        Player player = e.getPlayer();
+        for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+            spawnAble.updateFor(player, e.getTo());
         }
     }
 
