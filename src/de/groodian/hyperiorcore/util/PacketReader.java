@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class PacketReader {
 
-    private Player player;
+    protected Player player;
     private Channel channel;
 
     public PacketReader(Player player) {
@@ -47,13 +47,7 @@ public abstract class PacketReader {
             field = obj.getClass().getDeclaredField(name);
             field.setAccessible(true);
             field.set(obj, value);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -64,13 +58,7 @@ public abstract class PacketReader {
             field = obj.getClass().getDeclaredField(name);
             field.setAccessible(true);
             return field.get(obj);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
