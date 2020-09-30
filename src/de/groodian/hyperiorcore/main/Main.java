@@ -1,7 +1,15 @@
 package de.groodian.hyperiorcore.main;
 
-import java.util.List;
-
+import de.groodian.hyperiorcore.boards.HScoreboard;
+import de.groodian.hyperiorcore.boards.Prefix;
+import de.groodian.hyperiorcore.coinsystem.CoinSystem;
+import de.groodian.hyperiorcore.commands.RanksCommand;
+import de.groodian.hyperiorcore.level.Level;
+import de.groodian.hyperiorcore.listeners.MainListener;
+import de.groodian.hyperiorcore.listeners.SpawnAbleListener;
+import de.groodian.hyperiorcore.ranks.Ranks;
+import de.groodian.hyperiorcore.util.MySQLManager;
+import de.groodian.hyperiorcore.util.SpawnAble;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -9,114 +17,119 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import de.groodian.hyperiorcore.boards.HScoreboard;
-import de.groodian.hyperiorcore.boards.Prefix;
-import de.groodian.hyperiorcore.coinsystem.CoinSystem;
-import de.groodian.hyperiorcore.commands.RanksCommand;
-import de.groodian.hyperiorcore.level.Level;
-import de.groodian.hyperiorcore.listeners.MainListener;
-import de.groodian.hyperiorcore.ranks.Ranks;
-import de.groodian.hyperiorcore.util.MySQLManager;
+import java.util.List;
 
 public class Main extends JavaPlugin {
 
-	public static final String PREFIX = "§7[§dHyperiorCore§7] §r";
+    public static final String PREFIX = "§7[§dHyperiorCore§7] §r";
 
-	private static Main instance;
+    private static Main instance;
 
-	private MySQLManager mySQLManager;
+    private MySQLManager mySQLManager;
 
-	private Ranks ranks;
-	private Prefix prefix;
-	private HScoreboard scoreboard;
-	private CoinSystem coinSystem;
-	private Level level;
+    private Ranks ranks;
+    private Prefix prefix;
+    private HScoreboard scoreboard;
+    private CoinSystem coinSystem;
+    private Level level;
 
-	public void onEnable() {
-		Mode.setModeType(ModeType.BUKKIT);
+    public void onEnable() {
+        Mode.setModeType(ModeType.BUKKIT);
 
-		Output.send(PREFIX + "§aDas Plugin wird geladen....");
+        Output.send(PREFIX + "§aDas Plugin wird geladen....");
 
-		instance = this;
+        instance = this;
 
-		PluginManager pluginManager = Bukkit.getPluginManager();
-		pluginManager.registerEvents(new MainListener(this), this);
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new MainListener(this), this);
+        pluginManager.registerEvents(new SpawnAbleListener(), this);
 
-		getCommand("hyperiorranks").setExecutor(new RanksCommand(this));
+        getCommand("hyperiorranks").setExecutor(new RanksCommand(this));
 
-		mySQLManager = new MySQLManager();
-		mySQLManager.connect();
+        mySQLManager = new MySQLManager();
+        mySQLManager.connect();
 
-		ranks = new Ranks(mySQLManager.getCoreMySQL());
-		prefix = new Prefix(this);
-		scoreboard = new HScoreboard(this);
-		coinSystem = new CoinSystem(this);
-		level = new Level(this);
+        ranks = new Ranks(mySQLManager.getCoreMySQL());
+        prefix = new Prefix(this);
+        scoreboard = new HScoreboard(this);
+        coinSystem = new CoinSystem(this);
+        level = new Level(this);
 
-		day();
-		killAllMobs();
+        day();
+        killAllMobs();
 
-		Output.send(PREFIX + "§aGeladen!");
-	}
+        Output.send(PREFIX + "§aGeladen!");
+    }
 
-	public void onDisable() {
-		Output.send(PREFIX + "§cDas Plugin wird gestoppt....");
+    public void onDisable() {
+        Output.send(PREFIX + "§cDas Plugin wird gestoppt....");
 
-		mySQLManager.disconnect();
+        mySQLManager.disconnect();
 
-		Output.send(PREFIX + "§cGestoppt!");
-	}
+        Output.send(PREFIX + "§cGestoppt!");
+    }
 
-	private void day() {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				for (World w : Bukkit.getWorlds()) {
-					w.setTime(2000);
-					w.setWeatherDuration(1200);
-					w.setThunderDuration(1200);
-					w.setStorm(false);
-					w.setThundering(false);
-				}
-			}
-		}.runTaskTimerAsynchronously(this, 0, 1000);
-	}
+    private void day() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (World w : Bukkit.getWorlds()) {
+                    w.setTime(2000);
+                    w.setWeatherDuration(1200);
+                    w.setThunderDuration(1200);
+                    w.setStorm(false);
+                    w.setThundering(false);
+                }
+            }
+        }.runTaskTimerAsynchronously(this, 0, 1000);
+    }
 
-	private void killAllMobs() {
-		for (World w : Bukkit.getWorlds()) {
-			List<Entity> entitys = w.getEntities();
-			for (Entity entity : entitys) {
-				entity.remove();
-			}
-		}
-	}
+    private void killAllMobs() {
+        for (World w : Bukkit.getWorlds()) {
+            List<Entity> entitys = w.getEntities();
+            for (Entity entity : entitys) {
+                entity.remove();
+            }
+        }
+    }
 
-	public static Main getInstance() {
-		return instance;
-	}
+    private void updateSpawnAbles() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+                    spawnAble.update();
+                }
+            }
+        }.runTaskTimerAsynchronously(this, 40, 20);
+    }
 
-	public MySQLManager getMySQLManager() {
-		return mySQLManager;
-	}
+    public static Main getInstance() {
+        return instance;
+    }
 
-	public Ranks getRanks() {
-		return ranks;
-	}
+    public MySQLManager getMySQLManager() {
+        return mySQLManager;
+    }
 
-	public Prefix getPrefix() {
-		return prefix;
-	}
+    public Ranks getRanks() {
+        return ranks;
+    }
 
-	public HScoreboard getScoreboard() {
-		return scoreboard;
-	}
+    public Prefix getPrefix() {
+        return prefix;
+    }
 
-	public CoinSystem getCoinSystem() {
-		return coinSystem;
-	}
+    public HScoreboard getScoreboard() {
+        return scoreboard;
+    }
 
-	public Level getLevel() {
-		return level;
-	}
+    public CoinSystem getCoinSystem() {
+        return coinSystem;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
 
 }

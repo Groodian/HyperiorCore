@@ -29,66 +29,43 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class NPC {
+public class NPC extends SpawnAble {
 
     private Plugin plugin;
     private int entityID;
-    private Location location;
     private GameProfile gameProfile;
     private String name;
-    private List<Packet<?>> packets = new ArrayList<>();
-    private Map<Player, Long> isSetFor = new HashMap<>();
-    private Packet<?> tablistRemovePacket;
+    private List<Packet<?>> packets;
+    private Packet<?> tabListRemovePacket;
 
-    public NPC(String name, Location location, Plugin plugin) {
-        this.location = location;
+    public NPC(Location location, boolean showAll, Plugin plugin, String name) {
+        super(location, showAll);
         this.plugin = plugin;
+        this.name = name;
 
         entityID = (int) Math.ceil(Math.random() * 1000) + 2000;
         gameProfile = new GameProfile(UUID.randomUUID(), name);
+        packets = new ArrayList<>();
 
         create();
     }
 
-    public void spawnFor(Player player) {
+    @Override
+    protected void handleSpawnFor(Player player) {
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         for (Packet<?> packet : packets) {
             connection.sendPacket(packet);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> connection.sendPacket(tablistRemovePacket), 40);
-        isSetFor.put(player, System.currentTimeMillis());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> connection.sendPacket(tabListRemovePacket), 40);
     }
 
-    public void destroyFor(Player player) {
+    @Override
+    protected void handleDestroyFor(Player player) {
         PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entityID);
-        // removeFromTablist();
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-        isSetFor.remove(player);
-    }
-
-    public void updateFor(Player player) {
-        if (isSetFor.containsKey(player)) {
-            if (player.getLocation().distance(location) > 70.0) {
-                destroyFor(player);
-                // System.out.println(entityID + " destroy for " + player.getName());
-            } else {
-                if ((System.currentTimeMillis() - isSetFor.get(player)) > 120000) {
-                    destroyFor(player);
-                    spawnFor(player);
-                    // System.out.println(entityID + " respawn for " + player.getName());
-                }
-            }
-        } else {
-            if (player.getLocation().distance(location) <= 70.0) {
-                spawnFor(player);
-                // System.out.println(entityID + " spawn for " + player.getName());
-            }
-        }
     }
 
     public void teleport(Location location) {
@@ -169,9 +146,9 @@ public class NPC {
         w.a(7, 2);
         w.a(10, (byte) 127);
         setValue(packet, "i", w);
-        addToTablist();
+        addToTabList();
         packets.add(packet);
-        removeFromTablist();
+        removeFromTabList();
         teleport(location);
     }
 
@@ -184,7 +161,7 @@ public class NPC {
         packets.add(packetHead);
     }
 
-    private void addToTablist() {
+    private void addToTabList() {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         PacketPlayOutPlayerInfo.PlayerInfoData data = packet.new PlayerInfoData(gameProfile, 1, WorldSettings.EnumGamemode.NOT_SET, CraftChatMessage.fromString(name)[0]);
         List<PacketPlayOutPlayerInfo.PlayerInfoData> players = (List<PacketPlayOutPlayerInfo.PlayerInfoData>) getValue(packet, "b");
@@ -194,16 +171,16 @@ public class NPC {
         packets.add(packet);
     }
 
-    private void removeFromTablist() {
+    private void removeFromTabList() {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
         PacketPlayOutPlayerInfo.PlayerInfoData data = packet.new PlayerInfoData(gameProfile, -1, null, null);
         List<PacketPlayOutPlayerInfo.PlayerInfoData> players = (List<PacketPlayOutPlayerInfo.PlayerInfoData>) this.getValue(packet, "b");
         players.add(data);
         this.setValue(packet, "b", players);
-        tablistRemovePacket = packet;
+        tabListRemovePacket = packet;
     }
 
-    public void setValue(Object obj, String name, Object value) {
+    private void setValue(Object obj, String name, Object value) {
         Field field;
         try {
             field = obj.getClass().getDeclaredField(name);
@@ -214,7 +191,7 @@ public class NPC {
         }
     }
 
-    public Object getValue(Object obj, String name) {
+    private Object getValue(Object obj, String name) {
         Field field;
         try {
             field = obj.getClass().getDeclaredField(name);
@@ -226,7 +203,7 @@ public class NPC {
         return null;
     }
 
-    public void sendPacket(Packet<?> packet, Player player) {
+    private void sendPacket(Packet<?> packet, Player player) {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 
@@ -238,10 +215,6 @@ public class NPC {
         return (byte) ((int) (x * 256.0F / 360.0F));
     }
 
-    public boolean isSetFor(Player player) {
-        return isSetFor.containsKey(player);
-    }
-
     public int getEntityID() {
         return entityID;
     }
@@ -251,4 +224,3 @@ public class NPC {
     }
 
 }
-

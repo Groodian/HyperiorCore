@@ -3,7 +3,6 @@ package de.groodian.hyperiorcore.util;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -11,68 +10,47 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class Hologram {
+public class Hologram extends SpawnAble {
 
     private String[] text;
-    private Location location;
-    private ArrayList<EntityArmorStand> entitys;
-    private int count;
+    private ArrayList<EntityArmorStand> entities;
 
-    public Hologram(Location location, String... text) {
+    public Hologram(Location location, boolean showAll, String... text) {
+        super(location, showAll);
         this.text = text;
-        this.location = location;
-        entitys = new ArrayList<>();
+
+        entities = new ArrayList<>();
+
         create();
     }
 
-    public void create() {
-        for (String text : text) {
-            EntityArmorStand entity = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY(), location.getZ());
-            entity.setCustomName(text);
-            entity.setCustomNameVisible(true);
-            entity.setInvisible(true);
-            entity.setGravity(false);
-            location.subtract(0, 0.3, 0);
-            entitys.add(entity);
-            count++;
-        }
-        for (int i = 0; i < count; i++) {
-            location.add(0, 0.3, 0);
-        }
-        count = 0;
-    }
-
-    public void show(Player player) {
-        for (EntityArmorStand entity : entitys) {
+    @Override
+    protected void handleSpawnFor(Player player) {
+        for (EntityArmorStand entity : entities) {
             PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entity);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         }
     }
 
-    public void hide(Player player) {
-        for (EntityArmorStand entity : entitys) {
+    @Override
+    protected void handleDestroyFor(Player player) {
+        for (EntityArmorStand entity : entities) {
             PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entity.getId());
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         }
     }
 
-    public void showAll() {
-        for (EntityArmorStand entity : entitys) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entity);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-            }
+    private void create() {
+        Location tempLocation = location.clone();
+        for (String text : text) {
+            EntityArmorStand entity = new EntityArmorStand(((CraftWorld) tempLocation.getWorld()).getHandle(), tempLocation.getX(), tempLocation.getY(), tempLocation.getZ());
+            entity.setCustomName(text);
+            entity.setCustomNameVisible(true);
+            entity.setInvisible(true);
+            entity.setGravity(false);
+            tempLocation.subtract(0, 0.3, 0);
+            entities.add(entity);
         }
-    }
-
-    public void hideAll() {
-        for (EntityArmorStand entity : entitys) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entity.getId());
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-            }
-        }
-
     }
 
 }
