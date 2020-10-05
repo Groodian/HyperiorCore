@@ -15,13 +15,13 @@ public class Hologram extends SpawnAble {
     private String[] text;
     private ArrayList<EntityArmorStand> entities;
 
-    public Hologram(Location location, boolean showAll, String... text) {
-        super(location, showAll);
+    public Hologram(Location location, String... text) {
+        super(location);
         this.text = text;
 
         entities = new ArrayList<>();
 
-        create();
+        createHologram();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Hologram extends SpawnAble {
         }
     }
 
-    private void create() {
+    private void createHologram() {
         Location tempLocation = location.clone();
         for (String text : text) {
             EntityArmorStand entity = new EntityArmorStand(((CraftWorld) tempLocation.getWorld()).getHandle(), tempLocation.getX(), tempLocation.getY(), tempLocation.getZ());

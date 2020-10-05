@@ -33,23 +33,22 @@ public abstract class Client {
 
     protected abstract void handleDataPackage(DataPackage dataPackage);
 
+    protected abstract void onSuccessfulLogin();
+
     public void sendMessage(DataPackage pack) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        new Thread(() -> {
 
-                try {
-                    if (oos != null) {
-                        oos.writeObject(pack);
-                        oos.flush();
-                    } else {
-                        System.err.println("[ServiceClient] Message could not be sent, because the client is not logged in!");
-                    }
-                } catch (Exception e) {
-                    System.err.println("[ServiceClient] Message could not be sent!");
+            try {
+                if (oos != null) {
+                    oos.writeObject(pack);
+                    oos.flush();
+                } else {
+                    System.err.println("[ServiceClient] Message could not be sent, because the client is not logged in!");
                 }
-
+            } catch (Exception e) {
+                System.err.println("[ServiceClient] Message could not be sent!");
             }
+
         }).start();
     }
 
@@ -66,6 +65,7 @@ public abstract class Client {
             oos.flush();
             System.out.println("[ServiceClient] Logged in.");
 
+            onSuccessfulLogin();
             startListening();
         } catch (ConnectException e) {
             System.err.println("[ServiceClient] The server is unreachable.");

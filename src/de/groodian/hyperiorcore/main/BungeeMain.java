@@ -20,7 +20,7 @@ public class BungeeMain extends Plugin {
 
 		instance = this;
 
-		BungeeCord.getInstance().getPluginManager().registerListener(this, new BungeeMainListener());
+		BungeeCord.getInstance().getPluginManager().registerListener(this, new BungeeMainListener(this));
 
 		mySQLManager = new MySQLManager();
 		mySQLManager.connect();

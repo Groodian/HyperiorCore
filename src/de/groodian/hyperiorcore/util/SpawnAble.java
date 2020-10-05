@@ -15,24 +15,25 @@ public abstract class SpawnAble {
     private static int MAX_DISTANCE = 50;
     private static int RESPAWN_TIME = 120000;
 
+    protected Location location;
+
+    private boolean showAll;
     private List<Player> showFor;
     private Map<Player, Long> isSetFor;
 
-    protected Location location;
-    protected boolean showAll;
-
-    public SpawnAble(Location location, boolean showAll) {
+    public SpawnAble(Location location) {
         this.location = location;
-        this.showAll = showAll;
 
+        showAll = false;
         showFor = new ArrayList<>();
         isSetFor = new HashMap<>();
 
         spawnAbles.add(this);
+    }
 
-        if (showAll) {
-            showAll();
-        }
+    public void showAll() {
+        showAll = true;
+        showForAll();
     }
 
     public void show(Player player) {
@@ -71,20 +72,32 @@ public abstract class SpawnAble {
 
     protected abstract void handleDestroyFor(Player player);
 
-    private void showAll() {
+    private void showForAll() {
+        List<Player> temp = new ArrayList<>();
+
         for (Player player : Bukkit.getOnlinePlayers()) {
+            temp.add(player);
+        }
+
+        for (Player player : temp) {
             show(player);
         }
     }
 
-    private void hideAll() {
+    private void hideForAll() {
+        List<Player> temp = new ArrayList<>();
+
         for (Player player : showFor) {
+            temp.add(player);
+        }
+
+        for (Player player : temp) {
             hide(player);
         }
     }
 
     public void destroy() {
-        hideAll();
+        hideForAll();
         spawnAbles.remove(this);
     }
 

@@ -1,213 +1,328 @@
 package de.groodian.hyperiorcore.ranks;
 
+import de.groodian.hyperiorcore.util.MySQL;
+import de.groodian.hyperiorcore.util.UUIDFetcher;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-
-import de.groodian.hyperiorcore.util.MySQL;
 
 public class Ranks {
 
-	private MySQL coreMySQL;
-	private List<Rank> ranks;
+    private MySQL coreMySQL;
+    private UUIDFetcher uuidFetcher;
+    private Map<String, Rank> cache;
+    private List<Rank> ranks;
+    private Rank defaultRank;
 
-	public Ranks(MySQL coreMySQL) {
-		this.coreMySQL = coreMySQL;
-		
-		this.ranks = Arrays.asList(
-				
-				// don´t use 0!!!
-				
-				new Rank(
-				1,
-				"Admin",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick", "lookup", "unban", "ban", "broadcast", "motd", "lobby.setup", "lobby.build", "maintenance", "pban", "serverstarter", "minecraftparty.build", "minecraftparty.setup", "commandsblock.bypass", "ranks.all", "slots"),
-				"§4",
-				"§4Admin §7| §4",
-				"§4Admin §7| §4"),
-		
-				new Rank(
-				2,
-				"Moderator",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick", "lookup", "unban", "ban", "broadcast"),
-				"§9",
-				"§9Moderator §7| §9",
-				"§9Mod §7| §9"),
-		
-				new Rank(
-				3,
-				"Builder",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team"),
-				"§3",
-				"§3Builder §7| §3",
-				"§3Builder §7| §3"),
-		
-				new Rank(
-				4,
-				"Supporter",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick"),
-				"§2",
-				"§2Supporter §7| §2",
-				"§2Sup §7| §2"),
-		
-				new Rank(
-				5,
-				"YouTuber",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver"),
-				"§d",
-				"§dYouTuber §7| §d",
-				"§dYT §7| §d"),
-		
-				new Rank(
-				6,
-				"VIP",
-				Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver"),
-				"§e",
-				"§eVIP §7| §e",
-				"§eVIP §7| §e")
-		
-		);
-		
-	}
+    public Ranks(MySQL coreMySQL) {
+        this.coreMySQL = coreMySQL;
+        uuidFetcher = new UUIDFetcher();
+        cache = new HashMap<>();
 
-	public boolean setRank(UUID uuid, String name, String rankName) {
-		return setRank(uuid.toString(), name, rankName);
-	}
+        ranks = Arrays.asList(
 
-	public boolean setRank(String uuid, String name, String rankName) {
-		String stringUUID = uuid.toString().replaceAll("-", "");
+                // don´t use 0!!!
 
-		int rankValue = -1;
-		for (Rank rank : ranks) {
-			if (rank.getName().equalsIgnoreCase(rankName)) {
-				rankValue = rank.getValue();
-			}
-		}
-		if (rankValue == -1) {
-			return false;
-		}
+                new Rank(
+                        1,
+                        "Admin",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick", "lookup", "unban", "ban", "broadcast", "motd", "lobby.setup", "lobby.build", "maintenance", "pban", "serverstarter", "minecraftparty.build", "minecraftparty.setup", "commandsblock.bypass", "ranks.all", "slots"),
+                        "§4",
+                        "§4Admin §7| §4",
+                        "§4Admin §7| §4"),
 
-		if (isInDatabase(uuid)) {
-			try {
-				PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = ?, playername = ? WHERE UUID = ?");
-				ps.setInt(1, rankValue);
-				ps.setString(2, name);
-				ps.setString(3, stringUUID);
-				ps.executeUpdate();
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				PreparedStatement ps = coreMySQL.getConnection().prepareStatement("INSERT INTO core (UUID, playername, rank) VALUES(?,?,?)");
-				ps.setString(1, stringUUID);
-				ps.setString(2, name);
-				ps.setInt(3, rankValue);
-				ps.executeUpdate();
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+                new Rank(
+                        2,
+                        "Moderator",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick", "lookup", "unban", "ban", "broadcast"),
+                        "§9",
+                        "§9Moderator §7| §9",
+                        "§9Mod §7| §9"),
 
-		return false;
-	}
+                new Rank(
+                        3,
+                        "Builder",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team"),
+                        "§3",
+                        "§3Builder §7| §3",
+                        "§3Builder §7| §3"),
 
-	public Rank getRank(UUID uuid) {
-		return getRank(uuid.toString());
-	}
+                new Rank(
+                        4,
+                        "Supporter",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver", "team", "kick"),
+                        "§2",
+                        "§2Supporter §7| §2",
+                        "§2Sup §7| §2"),
 
-	public Rank getRank(String uuid) {
-		String stringUUID = uuid.toString().replaceAll("-", "");
-		if (hasRank(uuid)) {
-			try {
-				PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
-				ps.setString(1, stringUUID);
-				ResultSet rs = ps.executeQuery();
-				if (rs.next()) {
-					for (Rank rank : ranks) {
-						if (rank.getValue() == rs.getInt("rank")) {
-							return rank;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return new Rank(9, "Player", new ArrayList<String>(), "§a", "§a", "§a");
-	}
+                new Rank(
+                        5,
+                        "YouTuber",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver"),
+                        "§d",
+                        "§dYouTuber §7| §d",
+                        "§dYT §7| §d"),
 
-	public boolean has(UUID uuid, String permission) {
-		return has(uuid.toString(), permission);
-	}
+                new Rank(
+                        6,
+                        "VIP",
+                        Arrays.asList("cosmetics.buy", "dailybonus.vip", "minecraftparty.start", "coins", "minecraftparty.premiumjoin", "joinfullserver"),
+                        "§e",
+                        "§eVIP §7| §e",
+                        "§eVIP §7| §e")
 
-	public boolean has(String uuid, String permission) {
-		Rank rank = getRank(uuid);
-		for (String current : rank.getPermissions()) {
-			if (current.equals(permission)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        );
 
-	public boolean hasRank(UUID uuid) {
-		return hasRank(uuid.toString());
-	}
+        defaultRank = new Rank(9, "Player", new ArrayList<String>(), "§a", "§a", "§a");
 
-	public boolean hasRank(String uuid) {
-		String stringUUID = uuid.toString().replaceAll("-", "");
-		try {
-			PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
-			ps.setString(1, stringUUID);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				if (rs.getInt("rank") > 0) {
-					return true;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public boolean isInDatabase(String uuid) {
-		String stringUUID = uuid.toString().replaceAll("-", "");
-		try {
-			PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
-			ps.setString(1, stringUUID);
-			ResultSet rs = ps.executeQuery();
-			return rs.next();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+    }
 
-	public boolean removeRank(UUID uuid) {
-		return removeRank(uuid.toString());
-	}
+    /**
+     * This method can be executed sync
+     */
+    public boolean has(UUID uuid, String permission) {
+        return has(uuid.toString(), permission);
+    }
 
-	public boolean removeRank(String uuid) {
-		String stringUUID = uuid.toString().replaceAll("-", "");
-		if(hasRank(uuid)) {
-			try {
-				PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = NULL WHERE UUID = ?");
-				ps.setString(1, stringUUID);
-				ps.executeUpdate();
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}	
-		}
-		return false;
-	}
+    /**
+     * This method can be executed sync
+     */
+    public boolean has(String uuid, String permission) {
+        uuid = uuid.replaceAll("-", "");
+        if (cache.containsKey(uuid)) {
+            for (String current : cache.get(uuid).getPermissions()) {
+                if (current.equalsIgnoreCase(permission)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method can be executed sync
+     */
+    public Rank get(UUID uuid) {
+        return get(uuid.toString());
+    }
+
+    /**
+     * This method can be executed sync
+     */
+    public Rank get(String uuid) {
+        uuid = uuid.replaceAll("-", "");
+        if (cache.containsKey(uuid)) {
+            return cache.get(uuid);
+        }
+        return defaultRank;
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public void login(UUID uuid) {
+        String stringUUID = uuid.toString().replaceAll("-", "");
+        cache.put(stringUUID, getRankFromDatabase(stringUUID));
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public void logout(UUID uuid) {
+        String stringUUID = uuid.toString().replaceAll("-", "");
+        cache.remove(stringUUID);
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public String setRank(String name, String rankName) {
+        UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
+
+        if (result == null) {
+            return "§cThis player does not exist.";
+        }
+
+        Rank rank = null;
+        for (Rank current : ranks) {
+            if (current.getName().equalsIgnoreCase(rankName)) {
+                rank = current;
+            }
+        }
+        if (rank == null) {
+            return "§cCould not find the rank!";
+        }
+
+        try {
+
+            if (isInDatabase(result.getUUID())) {
+                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = ?, playername = ? WHERE UUID = ?");
+                ps.setInt(1, rank.getValue());
+                ps.setString(2, result.getName());
+                ps.setString(3, result.getUUID());
+                ps.executeUpdate();
+            } else {
+                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("INSERT INTO core (UUID, playername, rank) VALUES(?,?,?)");
+                ps.setString(1, result.getUUID());
+                ps.setString(2, result.getName());
+                ps.setInt(3, rank.getValue());
+                ps.executeUpdate();
+            }
+
+            if (cache.containsKey(result.getUUID())) {
+                cache.put(result.getUUID(), rank);
+            }
+
+            return "§a" + result.getName() + "§7 has now the rank " + rank.getColor() + rank.getName() + "§7.";
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "§cAn error occurred";
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public String removeRank(String name) {
+        UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
+
+        if (result == null) {
+            return "§cThis player does not exist.";
+        }
+
+        if (hasRank(result.getUUID())) {
+
+            try {
+
+                Rank rank = getRankFromDatabase(result.getUUID());
+
+                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = NULL WHERE UUID = ?");
+                ps.setString(1, result.getUUID());
+                ps.executeUpdate();
+
+                if (cache.containsKey(result.getUUID())) {
+                    cache.put(result.getUUID(), rank);
+                }
+
+                return "§a" + result.getName() + "§7 is no longer a " + rank.getColor() + rank.getName() + "§7.";
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            return "§a" + result.getName() + "§7 has no rank.";
+        }
+
+        return "§cAn error occurred";
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public String info(String name) {
+        UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
+
+        if (result == null) {
+            return "§cThis player does not exist.";
+        }
+
+        if (hasRank(result.getUUID())) {
+            Rank rank = getRankFromDatabase(result.getUUID());
+            return "§a" + result.getName() + "§7 has the rank " + rank.getColor() + rank.getName() + "§7.";
+        } else {
+            return "§a" + result.getName() + "§7 has no rank.";
+        }
+
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public String list() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("§7List:");
+        try {
+            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT UUID, playername, rank FROM core ORDER BY rank");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                for (Rank rank : ranks) {
+                    if (rank.getValue() == rs.getInt("rank")) {
+                        stringBuilder.append("\n" + rank.getLongPrefix() + rs.getString("playername"));
+                    }
+                }
+            }
+
+            return stringBuilder.toString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "§cAn error occurred";
+    }
+
+    /**
+     * This method should be executed async
+     */
+    public Rank getRankFromDatabase(String uuid) {
+        uuid = uuid.replaceAll("-", "");
+        if (hasRank(uuid)) {
+            try {
+                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+                ps.setString(1, uuid);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    for (Rank rank : ranks) {
+                        if (rank.getValue() == rs.getInt("rank")) {
+                            return rank;
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return defaultRank;
+    }
+
+    private boolean hasRank(String uuid) {
+        uuid = uuid.replaceAll("-", "");
+        try {
+            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+            ps.setString(1, uuid);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                if (rs.getInt("rank") > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean isInDatabase(String uuid) {
+        uuid = uuid.replaceAll("-", "");
+        try {
+            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+            ps.setString(1, uuid);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }

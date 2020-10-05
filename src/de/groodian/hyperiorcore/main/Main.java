@@ -6,13 +6,13 @@ import de.groodian.hyperiorcore.coinsystem.CoinSystem;
 import de.groodian.hyperiorcore.commands.RanksCommand;
 import de.groodian.hyperiorcore.level.Level;
 import de.groodian.hyperiorcore.listeners.MainListener;
-import de.groodian.hyperiorcore.listeners.SpawnAbleListener;
 import de.groodian.hyperiorcore.ranks.Ranks;
 import de.groodian.hyperiorcore.util.MySQLManager;
 import de.groodian.hyperiorcore.util.SpawnAble;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,7 +42,6 @@ public class Main extends JavaPlugin {
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new MainListener(this), this);
-        pluginManager.registerEvents(new SpawnAbleListener(), this);
 
         getCommand("hyperiorranks").setExecutor(new RanksCommand(this));
 
@@ -82,7 +81,7 @@ public class Main extends JavaPlugin {
                     w.setThundering(false);
                 }
             }
-        }.runTaskTimerAsynchronously(this, 0, 1000);
+        }.runTaskTimer(this, 0, 1000);
     }
 
     private void killAllMobs() {
@@ -102,7 +101,7 @@ public class Main extends JavaPlugin {
                     spawnAble.update();
                 }
             }
-        }.runTaskTimerAsynchronously(this, 40, 20);
+        }.runTaskTimer(this, 40, 20);
     }
 
     public static Main getInstance() {
@@ -131,6 +130,10 @@ public class Main extends JavaPlugin {
 
     public Level getLevel() {
         return level;
+    }
+
+    public Plugin getPlugin() {
+        return getPlugin(Main.class);
     }
 
 }

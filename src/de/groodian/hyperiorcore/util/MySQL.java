@@ -50,7 +50,7 @@ public class MySQL {
 	}
 
 	public boolean isConnected() {
-		return (connection == null ? false : true);
+		return (connection != null);
 	}
 
 	public Connection getConnection() {

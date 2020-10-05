@@ -41,8 +41,8 @@ public class NPC extends SpawnAble {
     private List<Packet<?>> packets;
     private Packet<?> tabListRemovePacket;
 
-    public NPC(Location location, boolean showAll, Plugin plugin, String name) {
-        super(location, showAll);
+    public NPC(Location location, Plugin plugin, String name) {
+        super(location);
         this.plugin = plugin;
         this.name = name;
 
@@ -50,7 +50,7 @@ public class NPC extends SpawnAble {
         gameProfile = new GameProfile(UUID.randomUUID(), name);
         packets = new ArrayList<>();
 
-        create();
+        createNPC();
     }
 
     @Override
@@ -128,7 +128,7 @@ public class NPC extends SpawnAble {
         }
     }
 
-    private void create() {
+    private void createNPC() {
         PacketPlayOutNamedEntitySpawn packet = new PacketPlayOutNamedEntitySpawn();
         setValue(packet, "a", entityID);
         setValue(packet, "b", gameProfile.getId());

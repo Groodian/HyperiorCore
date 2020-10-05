@@ -25,7 +25,7 @@ public class MySQLManager {
 
 			if (coreMySQL != null) {
 				coreMySQL.connect();
-				PreparedStatement ps01 = coreMySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS core (UUID VARCHAR(100), playername VARCHAR(100), rank INT(100), level INT(100), coins INT(100))");
+				PreparedStatement ps01 = coreMySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS core (UUID VARCHAR(100), playername VARCHAR(100), rank INT(100), level INT(100), coins INT(100), dailybonus VARCHAR(100), dailybonusvip VARCHAR(100))");
 				ps01.executeUpdate();
 			}
 
