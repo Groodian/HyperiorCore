@@ -4,9 +4,6 @@ import de.groodian.hyperiorcore.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -18,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class HScoreboard implements Listener {
+public class HScoreboard {
 
     private static final String OBJECTIVE_NAME = "SBbyGroodian";
 
@@ -27,13 +24,7 @@ public class HScoreboard implements Listener {
 
     public HScoreboard(Main plugin) {
         this.plugin = plugin;
-        this.cache = new HashMap<>();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
-
-    @EventHandler
-    private void playerQuit(PlayerQuitEvent e) {
-        removeFromCache(e.getPlayer());
+        cache = new HashMap<>();
     }
 
     public void registerScoreboard(Player player, String title, int lines) {
@@ -206,7 +197,7 @@ public class HScoreboard implements Listener {
 
     }
 
-    private void removeFromCache(Player player) {
+    public void removeFromCache(Player player) {
         if (cache.containsKey(player)) {
             stopTitleAnimation(player);
             cache.remove(player);

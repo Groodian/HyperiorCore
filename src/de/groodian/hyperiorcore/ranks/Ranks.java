@@ -133,7 +133,7 @@ public class Ranks {
     }
 
     /**
-     * This method should be executed async
+     * This method can be executed sync
      */
     public void logout(UUID uuid) {
         String stringUUID = uuid.toString().replaceAll("-", "");
