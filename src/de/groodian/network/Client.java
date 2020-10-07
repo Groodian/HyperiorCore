@@ -36,57 +36,63 @@ public abstract class Client {
     protected abstract void onSuccessfulLogin();
 
     public void sendMessage(DataPackage pack) {
-        new Thread(() -> {
+        if (listening) {
+            new Thread(() -> {
 
-            try {
-                if (oos != null) {
-                    oos.writeObject(pack);
-                    oos.flush();
-                } else {
-                    System.err.println("[ServiceClient] Message could not be sent, because the client is not logged in!");
+                try {
+                    if (oos != null) {
+                        System.out.println("[ServiceClient] Sending pack: " + pack);
+                        oos.writeObject(pack);
+                        oos.flush();
+                    } else {
+                        System.err.println("[ServiceClient] Message could not be sent, because the client is not logged in!");
+                    }
+                } catch (Exception e) {
+                    System.err.println("[ServiceClient] Message could not be sent!");
                 }
-            } catch (Exception e) {
-                System.err.println("[ServiceClient] Message could not be sent!");
-            }
 
-        }).start();
+            }).start();
+        }
     }
 
     private void login() {
-        try {
-            System.out.println("[ServiceClient] Connecting...");
-            login = new Socket();
-            login.connect(address, 5000);
-            System.out.println("[ServiceClient] Connected to: " + login.getRemoteSocketAddress());
+        if (listening) {
+            try {
+                System.out.println("[ServiceClient] Connecting...");
+                login = new Socket();
+                login.connect(address, 5000);
+                System.out.println("[ServiceClient] Connected to: " + login.getRemoteSocketAddress());
 
-            System.out.println("[ServiceClient] Logging in...");
-            oos = new ObjectOutputStream(new BufferedOutputStream(login.getOutputStream()));
-            oos.writeObject(loginPack);
-            oos.flush();
-            System.out.println("[ServiceClient] Logged in.");
+                System.out.println("[ServiceClient] Logging in...");
+                oos = new ObjectOutputStream(new BufferedOutputStream(login.getOutputStream()));
+                oos.writeObject(loginPack);
+                oos.flush();
+                // the object stream format has a header, and the ObjectInputStream reads that
+                // header on construction. therefore, it is blocking until it receives that
+                // header over the socket.
+                ois = new ObjectInputStream(new BufferedInputStream(login.getInputStream()));
+                System.out.println("[ServiceClient] Logged in.");
 
-            onSuccessfulLogin();
-            startListening();
-        } catch (ConnectException e) {
-            System.err.println("[ServiceClient] The server is unreachable.");
-            repairConnection();
-        } catch (Exception e) {
-            System.err.println("[ServiceClient] An error occurred.");
-            e.printStackTrace();
-            repairConnection();
+                onSuccessfulLogin();
+                startListening();
+            } catch (ConnectException e) {
+                System.err.println("[ServiceClient] The server is unreachable.");
+                repairConnection();
+            } catch (Exception e) {
+                System.err.println("[ServiceClient] An error occurred.");
+                e.printStackTrace();
+                repairConnection();
+            }
         }
     }
 
     private void startListening() {
         try {
-            // the object stream format has a header, and the ObjectInputStream reads that
-            // header on construction. therefore, it is blocking until it receives that
-            // header over the socket.
-            ois = new ObjectInputStream(new BufferedInputStream(login.getInputStream()));
             while (listening) {
                 // Waiting for messages
                 Object pack = ois.readObject();
                 if (pack instanceof DataPackage) {
+                    System.out.println("[ServiceClient] Pack received: " + pack);
                     handleDataPackage((DataPackage) pack);
                 } else {
                     System.err.println("[ServiceClient] Unknown pack: " + pack);
