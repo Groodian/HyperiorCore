@@ -3,13 +3,13 @@ package de.groodian.hyperiorcore.listeners;
 import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.ranks.Rank;
 import de.groodian.hyperiorcore.util.SpawnAble;
-import de.groodian.hyperiorcore.util.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -39,9 +39,14 @@ public class MainListener implements Listener {
         e.setFormat(spec + rank.getLongPrefix() + player.getName() + " §7» §r" + e.getMessage());
     }
 
+    @EventHandler
+    public void handleAsyncPlayerJoin(AsyncPlayerPreLoginEvent e) {
+        plugin.getRanks().login(e.getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void handlePlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
         // Muss sein da das Scoreboard aus irgendeinem Grund manchmal gespeichert wird
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
@@ -52,22 +57,11 @@ public class MainListener implements Listener {
             }
         }
 
-        new Task(plugin.getPlugin()) {
-            @Override
-            public void executeAsync() {
-                plugin.getRanks().login(player.getUniqueId());
-            }
+        plugin.getPrefix().setPrefix(player);
+        plugin.getPrefix().setListName(player);
 
-            @Override
-            public void executeSyncOnFinish() {
+        plugin.getLevel().updateLevel(player);
 
-                plugin.getPrefix().setPrefix(player);
-                plugin.getPrefix().setListName(player);
-
-                plugin.getLevel().updateLevel(player);
-
-            }
-        };
     }
 
     @EventHandler
