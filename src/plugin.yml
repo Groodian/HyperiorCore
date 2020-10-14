@@ -1,9 +1,9 @@
 name: HyperiorCore_by_Groodian
-version: 4.3
+version: 4.4
 author: Groodian
 main: de.groodian.hyperiorcore.main.Main
 
 commands:
-   hyperiorranks:
-      description: Set, remove and see ranks
-      aliases: [hr, ranks]
+  hyperiorranks:
+    description: Set, remove and see ranks
+    aliases: [ hr, ranks ]
