@@ -51,7 +51,7 @@ public class MySQLManager {
 
             if (cosmeticMySQL != null) {
                 cosmeticMySQL.connect();
-                PreparedStatement ps01 = cosmeticMySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS cosmetic (UUID VARCHAR(100), playername VARCHAR(100), cosmetics TEXT(99999), particle INT(100), block INT(100), helmet INT(100), chestplate INT(100), pants INT(100), shoes INT(100), gadget INT(100))");
+                PreparedStatement ps01 = cosmeticMySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS cosmetic (UUID VARCHAR(100), playername VARCHAR(100), cosmetics TEXT(99999), particle INT(100), block INT(100), helmet INT(100), chest_plate INT(100), pants INT(100), shoes INT(100), gadget INT(100))");
                 ps01.executeUpdate();
             }
 
