@@ -19,7 +19,7 @@ public class MySQLManager {
             dataMySQL = new MySQL("localhost", 3306, "data", "admin", "test321");
         } else if (Mode.getModeType() == ModeType.BUKKIT) {
             minecraftPartyMySQL = new MySQL("localhost", 3306, "minecraftparty", "admin", "test321");
-            cosmeticMySQL = new MySQL("localhost", 3306, "cosmetics", "admin", "test321");
+            cosmeticMySQL = new MySQL("localhost", 3306, "cosmetic", "admin", "test321");
         }
     }
 
