@@ -207,9 +207,7 @@ public class Ranks {
                 ps.setString(1, result.getUUID());
                 ps.executeUpdate();
 
-                if (cache.containsKey(result.getUUID())) {
-                    cache.put(result.getUUID(), rank);
-                }
+                cache.remove(result.getUUID());
 
                 return "§a" + result.getName() + "§7 is no longer a " + rank.getColor() + rank.getName() + "§7.";
 
