@@ -42,6 +42,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void handleAsyncPlayerJoin(AsyncPlayerPreLoginEvent e) {
         plugin.getRanks().login(e.getUniqueId());
+        plugin.getCoinSystem().login(e.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -74,6 +75,7 @@ public class MainListener implements Listener {
         }
 
         plugin.getRanks().logout(player.getUniqueId());
+        plugin.getCoinSystem().logout(player.getUniqueId());
 
     }
 

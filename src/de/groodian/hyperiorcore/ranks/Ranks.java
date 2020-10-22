@@ -176,9 +176,7 @@ public class Ranks {
                 ps.executeUpdate();
             }
 
-            if (cache.containsKey(result.getUUID())) {
-                cache.put(result.getUUID(), rank);
-            }
+            cache.put(result.getUUID(), rank);
 
             return "§a" + result.getName() + "§7 has now the rank " + rank.getColor() + rank.getName() + "§7.";
 
