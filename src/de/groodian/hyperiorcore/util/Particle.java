@@ -11,18 +11,20 @@ public class Particle {
 
     private EnumParticle particleType;
     private boolean longDistance;
-    private Location location;
-    private float red;
-    private float green;
-    private float blue;
+    private int red;
+    private int green;
+    private int blue;
     private float brightness;
     private int amount;
     private int data;
 
-    public Particle(EnumParticle particleType, Location location, boolean longDistance, float red, float green, float blue, float brightness, int amount, int data) {
+    public Particle(EnumParticle enumParticle) {
+        this(enumParticle, false, 0, 0, 0, 0, 0, 0);
+    }
+
+    public Particle(EnumParticle particleType, boolean longDistance, int red, int green, int blue, float brightness, int amount, int data) {
         this.particleType = particleType;
         this.longDistance = longDistance;
-        this.location = location;
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -31,15 +33,15 @@ public class Particle {
         this.data = data;
     }
 
-    public void sendAll() {
-        for (Player all : Bukkit.getOnlinePlayers()) {
-            sendPlayer(all);
+    public void send(Location location) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            sendPlayer(player, location);
         }
     }
 
-    public void sendPlayer(Player player) {
+    public void sendPlayer(Player player, Location location) {
         if (player.getLocation().distance(location) < 50) {
-            PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(particleType, longDistance, (float) location.getX(), (float) location.getY(), (float) location.getZ(), red, green, blue, brightness, amount, data);
+            PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(particleType, longDistance, (float) location.getX(), (float) location.getY(), (float) location.getZ(), red / 255.0f, green / 255.0f, blue / 255.0f, brightness, amount, data);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         }
     }
