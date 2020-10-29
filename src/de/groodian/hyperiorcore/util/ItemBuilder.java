@@ -7,6 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ItemBuilder {
 
@@ -31,6 +32,11 @@ public class ItemBuilder {
 
     public ItemBuilder setLore(String... lore) {
         itemMeta.setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public ItemBuilder setLore(List<String> lore) {
+        itemMeta.setLore(lore);
         return this;
     }
 
