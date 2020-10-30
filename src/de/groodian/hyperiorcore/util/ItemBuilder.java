@@ -2,6 +2,8 @@ package de.groodian.hyperiorcore.util;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -13,7 +15,6 @@ public class ItemBuilder {
 
     private ItemStack item;
     private ItemMeta itemMeta;
-    private LeatherArmorMeta itemColorMeta;
 
     public ItemBuilder(Material material, short subID) {
         item = new ItemStack(material, 1, subID);
@@ -25,17 +26,34 @@ public class ItemBuilder {
         this(material, (short) 0);
     }
 
+    public ItemBuilder(ItemStack item) {
+        this.item = item;
+        itemMeta = item.getItemMeta();
+    }
+
     public ItemBuilder setName(String name) {
         itemMeta.setDisplayName(name);
         return this;
     }
 
     public ItemBuilder setLore(String... lore) {
-        itemMeta.setLore(Arrays.asList(lore));
+        setLore(Arrays.asList(lore));
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
+        itemMeta.setLore(lore);
+        return this;
+    }
+
+    public ItemBuilder addLore(String... additionalLore) {
+        addLore(Arrays.asList(additionalLore));
+        return this;
+    }
+
+    public ItemBuilder addLore(List<String> additionalLore) {
+        List<String> lore = itemMeta.getLore();
+        lore.addAll(additionalLore);
         itemMeta.setLore(lore);
         return this;
     }
@@ -45,10 +63,16 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder addGlow() {
+        itemMeta.addEnchant(Enchantment.DURABILITY, 0, true);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        return this;
+    }
+
     public ItemStack setColorAndBuild(int red, int green, int blue) {
         Color color = Color.fromRGB(red, green, blue);
         item.setItemMeta(itemMeta);
-        itemColorMeta = (LeatherArmorMeta) item.getItemMeta();
+        LeatherArmorMeta itemColorMeta = (LeatherArmorMeta) item.getItemMeta();
         itemColorMeta.setColor(color);
         item.setItemMeta(itemColorMeta);
         return item;
