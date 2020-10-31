@@ -45,9 +45,9 @@ public class CoinSystem {
             public void executeSyncOnFinish() {
                 if (endOfRound) {
                     if (plugin.getRanks().has(player.getUniqueId(), "coins")) {
-                        player.sendMessage("§7[§eCoinSystem§7] §e+" + fCoins + " §6Coins §7(x2 §cGründer-Boost§7)");
+                        player.sendMessage("§7[§eCoinSystem§7] §e+" + fCoins + " §6Coins §7(x2 §eVIP-Boost§7)");
                     } else {
-                        player.sendMessage("§7[§eCoinSystem§7] §e+" + fCoins + " §6Coins §7(x2 mit dem §cGründer-Rang§7)");
+                        player.sendMessage("§7[§eCoinSystem§7] §e+" + fCoins + " §6Coins §7(x2 mit dem §eVIP-Rang§7)");
                     }
                 } else {
                     player.sendMessage("§7[§eCoinSystem§7] §e+" + fCoins + " §6Coins");
