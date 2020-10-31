@@ -19,7 +19,7 @@ public class Particle {
     private int data;
 
     public Particle(EnumParticle enumParticle) {
-        this(enumParticle, false, 0, 0, 0, 0, 0, 0);
+        this(enumParticle, true, 0, 0, 0, 0, 0, 0);
     }
 
     public Particle(EnumParticle particleType, boolean longDistance, int red, int green, int blue, float brightness, int amount, int data) {
