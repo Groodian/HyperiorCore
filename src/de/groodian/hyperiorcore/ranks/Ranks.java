@@ -1,6 +1,7 @@
 package de.groodian.hyperiorcore.ranks;
 
 import de.groodian.hyperiorcore.util.MySQL;
+import de.groodian.hyperiorcore.util.MySQLConnection;
 import de.groodian.hyperiorcore.util.UUIDFetcher;
 
 import java.sql.PreparedStatement;
@@ -163,17 +164,23 @@ public class Ranks {
         try {
 
             if (isInDatabase(result.getUUID())) {
-                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = ?, playername = ? WHERE UUID = ?");
+                MySQLConnection connection = coreMySQL.getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("UPDATE core SET rank = ?, playername = ? WHERE UUID = ?");
                 ps.setInt(1, rank.getValue());
                 ps.setString(2, result.getName());
                 ps.setString(3, result.getUUID());
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             } else {
-                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("INSERT INTO core (UUID, playername, rank) VALUES(?,?,?)");
+                MySQLConnection connection = coreMySQL.getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("INSERT INTO core (UUID, playername, rank) VALUES(?,?,?)");
                 ps.setString(1, result.getUUID());
                 ps.setString(2, result.getName());
                 ps.setInt(3, rank.getValue());
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             }
 
             cache.put(result.getUUID(), rank);
@@ -203,9 +210,12 @@ public class Ranks {
 
                 Rank rank = getRankFromDatabase(result.getUUID());
 
-                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("UPDATE core SET rank = NULL WHERE UUID = ?");
+                MySQLConnection connection = coreMySQL.getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("UPDATE core SET rank = NULL WHERE UUID = ?");
                 ps.setString(1, result.getUUID());
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
 
                 cache.remove(result.getUUID());
 
@@ -248,7 +258,8 @@ public class Ranks {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("§7List:");
         try {
-            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT UUID, playername, rank FROM core ORDER BY rank");
+            MySQLConnection connection = coreMySQL.getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT UUID, playername, rank FROM core ORDER BY rank");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 for (Rank rank : ranks) {
@@ -257,6 +268,8 @@ public class Ranks {
                     }
                 }
             }
+            ps.close();
+            connection.finish();
 
             return stringBuilder.toString();
 
@@ -274,16 +287,21 @@ public class Ranks {
         uuid = uuid.replaceAll("-", "");
         if (hasRank(uuid)) {
             try {
-                PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+                MySQLConnection connection = coreMySQL.getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
+                Rank returnRank = defaultRank;
                 if (rs.next()) {
                     for (Rank rank : ranks) {
                         if (rank.getValue() == rs.getInt("rank")) {
-                            return rank;
+                            returnRank = rank;
                         }
                     }
                 }
+                ps.close();
+                connection.finish();
+                return returnRank;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -294,14 +312,19 @@ public class Ranks {
     private boolean hasRank(String uuid) {
         uuid = uuid.replaceAll("-", "");
         try {
-            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+            MySQLConnection connection = coreMySQL.getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
+            boolean hasRank = false;
             if (rs.next()) {
                 if (rs.getInt("rank") > 0) {
-                    return true;
+                    hasRank = true;
                 }
             }
+            ps.close();
+            connection.finish();
+            return hasRank;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -311,10 +334,14 @@ public class Ranks {
     private boolean isInDatabase(String uuid) {
         uuid = uuid.replaceAll("-", "");
         try {
-            PreparedStatement ps = coreMySQL.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
+            MySQLConnection connection = coreMySQL.getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT rank FROM core WHERE UUID = ?");
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
-            return rs.next();
+            boolean isInDatabase = rs.next();
+            ps.close();
+            connection.finish();
+            return isInDatabase;
         } catch (SQLException e) {
             e.printStackTrace();
         }

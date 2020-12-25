@@ -2,6 +2,7 @@ package de.groodian.hyperiorcore.level;
 
 import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.util.HSound;
+import de.groodian.hyperiorcore.util.MySQLConnection;
 import de.groodian.hyperiorcore.util.Task;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -92,12 +93,17 @@ public class Level {
     public int getLevel(String uuid) {
         if (hasLevel(uuid)) {
             try {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("SELECT level FROM core WHERE UUID = ?");
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("SELECT level FROM core WHERE UUID = ?");
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    return rs.getInt("level");
+                int level = 0;
+                if (rs.next()) {
+                    level = rs.getInt("level");
                 }
+                ps.close();
+                connection.finish();
+                return level;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -111,12 +117,17 @@ public class Level {
 
     private int getMpPoints(String uuid) {
         try {
-            PreparedStatement ps = plugin.getMySQLManager().getMinecraftPartyMySQL().getConnection().prepareStatement("SELECT points FROM stats WHERE UUID = ?");
+            MySQLConnection connection = plugin.getMySQLManager().getMinecraftPartyMySQL().getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT points FROM stats WHERE UUID = ?");
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
+            int mpPoints = 0;
             if (rs.next()) {
-                return (int) rs.getLong("points");
+                mpPoints = (int) rs.getLong("points");
             }
+            ps.close();
+            connection.finish();
+            return mpPoints;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -126,21 +137,27 @@ public class Level {
     private void setLevel(String uuid, String name, int level) {
         if (hasLevel(uuid)) {
             try {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("UPDATE core SET level = ?, playername = ? WHERE UUID = ?");
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("UPDATE core SET level = ?, playername = ? WHERE UUID = ?");
                 ps.setInt(1, level);
                 ps.setString(2, name);
                 ps.setString(3, uuid);
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("INSERT INTO core (UUID, playername, level) VALUES(?,?,?)");
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("INSERT INTO core (UUID, playername, level) VALUES(?,?,?)");
                 ps.setString(1, uuid);
                 ps.setString(2, name);
                 ps.setInt(3, level);
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -149,10 +166,14 @@ public class Level {
 
     private boolean hasLevel(String uuid) {
         try {
-            PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("SELECT level FROM core WHERE UUID = ?");
+            MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT level FROM core WHERE UUID = ?");
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
-            return rs.next();
+            boolean hasLevel = rs.next();
+            ps.close();
+            connection.finish();
+            return hasLevel;
         } catch (SQLException e) {
             e.printStackTrace();
         }

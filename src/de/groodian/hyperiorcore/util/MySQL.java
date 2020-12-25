@@ -1,21 +1,19 @@
 package de.groodian.hyperiorcore.util;
 
-import de.groodian.hyperiorcore.main.Main;
-import de.groodian.hyperiorcore.main.Output;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySQL {
 
-    private Connection connection;
+    private static final int CONNECTIONS_KEEP_OPEN = 1;
 
-    private String hostname;
-    private int port;
-    private String database;
-    private String username;
-    private String password;
+    private List<MySQLConnection> connections = new ArrayList<>();
+
+    protected String hostname;
+    protected int port;
+    protected String database;
+    protected String username;
+    protected String password;
 
     public MySQL(String hostname, int port, String database, String username, String password) {
         this.hostname = hostname;
@@ -25,44 +23,42 @@ public class MySQL {
         this.password = password;
     }
 
-    public void connect() {
-        if (!isConnected()) {
-            try {
-                connection = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + database, username, password);
-                Output.send(Main.PREFIX + "§aSuccessfully connected to the §bMySQL §adatabase §b" + database + "§a.");
-            } catch (SQLException e) {
-                Output.send(Main.PREFIX + "§4An error occurred while connecting to the §bMySQL §4database §b" + database + "§4:");
-                Output.send(Main.PREFIX + "§4" + e.getMessage());
+    /**
+     * This method returns a new or reused connection and lock it.
+     * If the DB operation is done use finish() to unlock the connection, that the connection can
+     * be reused or closed (depends on the amount of open connections). Otherwise the connection will never close or reused!
+     */
+    public synchronized MySQLConnection getMySQLConnection() {
+        for (MySQLConnection connection : connections) {
+            if (!connection.isLocked()) {
+                connection.lock();
+                return connection;
             }
         }
+
+        MySQLConnection connection = openNewMySQLConnection();
+        connection.lock();
+        return connection;
     }
 
     public void disconnect() {
-        if (isConnected()) {
-            try {
-                connection.close();
-                Output.send(Main.PREFIX + "§aSuccessfully disconnected to the §bMySQL §adatabase §b" + database + "§a.");
-            } catch (SQLException e) {
-                Output.send(Main.PREFIX + "§4An error occurred while disconnecting to the §bMySQL §4database §b" + database + "§4:");
-                Output.send(Main.PREFIX + "§4" + e.getMessage());
-            }
+        for (MySQLConnection connection : connections) {
+            connection.disconnect();
+        }
+        connections.clear();
+    }
+
+    protected synchronized void connectionFinished(MySQLConnection connection) {
+        if (connections.size() > CONNECTIONS_KEEP_OPEN) {
+            connection.disconnect();
+            connections.remove(connection);
         }
     }
 
-    public boolean isConnected() {
-        return (connection != null);
-    }
-
-    public Connection getConnection() {
-        try {
-            if (!connection.isValid(2)) {
-                connection.close();
-                connection = null;
-                connect();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    private MySQLConnection openNewMySQLConnection() {
+        MySQLConnection connection = new MySQLConnection(this);
+        connection.connect();
+        connections.add(connection);
         return connection;
     }
 

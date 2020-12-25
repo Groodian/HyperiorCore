@@ -1,6 +1,7 @@
 package de.groodian.hyperiorcore.coinsystem;
 
 import de.groodian.hyperiorcore.main.Main;
+import de.groodian.hyperiorcore.util.MySQLConnection;
 import de.groodian.hyperiorcore.util.Task;
 import org.bukkit.entity.Player;
 
@@ -122,12 +123,17 @@ public class CoinSystem {
         String stringUUID = uuid.toString().replaceAll("-", "");
         if (hasCoins(uuid)) {
             try {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("SELECT coins FROM core WHERE UUID = ?");
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("SELECT coins FROM core WHERE UUID = ?");
                 ps.setString(1, stringUUID);
                 ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    return rs.getInt("coins");
+                int coins = 0;
+                if (rs.next()) {
+                    coins = rs.getInt("coins");
                 }
+                ps.close();
+                connection.finish();
+                return coins;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -142,17 +148,24 @@ public class CoinSystem {
 
         try {
             if (hasCoins(uuid)) {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("UPDATE core SET coins = ?, playername = ? WHERE UUID = ?");
-                ps.setInt(1, getCoinsFromDatabase(uuid) + coins);
+                int coinsFromDatabase = getCoinsFromDatabase(uuid);
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("UPDATE core SET coins = ?, playername = ? WHERE UUID = ?");
+                ps.setInt(1, coinsFromDatabase + coins);
                 ps.setString(2, name);
                 ps.setString(3, stringUUID);
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             } else {
-                PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("INSERT INTO core (UUID, playername, coins) VALUES(?,?,?)");
+                MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+                PreparedStatement ps = connection.getConnection().prepareStatement("INSERT INTO core (UUID, playername, coins) VALUES(?,?,?)");
                 ps.setString(1, stringUUID);
                 ps.setString(2, name);
                 ps.setInt(3, coins);
                 ps.executeUpdate();
+                ps.close();
+                connection.finish();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -162,10 +175,14 @@ public class CoinSystem {
     private boolean hasCoins(UUID uuid) {
         String stringUUID = uuid.toString().replaceAll("-", "");
         try {
-            PreparedStatement ps = plugin.getMySQLManager().getCoreMySQL().getConnection().prepareStatement("SELECT coins FROM core WHERE UUID = ?");
+            MySQLConnection connection = plugin.getMySQLManager().getCoreMySQL().getMySQLConnection();
+            PreparedStatement ps = connection.getConnection().prepareStatement("SELECT coins FROM core WHERE UUID = ?");
             ps.setString(1, stringUUID);
             ResultSet rs = ps.executeQuery();
-            return rs.next();
+            boolean hasCoins = rs.next();
+            ps.close();
+            connection.finish();
+            return hasCoins;
         } catch (SQLException e) {
             e.printStackTrace();
         }
