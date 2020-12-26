@@ -2,12 +2,18 @@ package de.groodian.hyperiorcore.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class MySQL {
 
-    private static final int CONNECTIONS_KEEP_OPEN = 1;
+    /**
+     * If the the number of max connections is greater than one problems can occur when two threads reading/writing on the same data!
+     */
+    private static final int MAX_CONNECTIONS = 1;
 
     private List<MySQLConnection> connections = new ArrayList<>();
+    private BlockingQueue<MySQLConnection> availableConnections = new ArrayBlockingQueue<>(MAX_CONNECTIONS);
 
     protected String hostname;
     protected int port;
@@ -29,16 +35,16 @@ public class MySQL {
      * be reused or closed (depends on the amount of open connections). Otherwise the connection will never close or reused!
      */
     public synchronized MySQLConnection getMySQLConnection() {
-        for (MySQLConnection connection : connections) {
-            if (!connection.isLocked()) {
-                connection.lock();
-                return connection;
+        try {
+            if (connections.size() < MAX_CONNECTIONS) {
+                openNewMySQLConnection();
             }
+            MySQLConnection connection = availableConnections.take();
+            return connection;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
-        MySQLConnection connection = openNewMySQLConnection();
-        connection.lock();
-        return connection;
+        return null;
     }
 
     public void disconnect() {
@@ -46,19 +52,18 @@ public class MySQL {
             connection.disconnect();
         }
         connections.clear();
+        availableConnections.clear();
     }
 
-    protected synchronized void connectionFinished(MySQLConnection connection) {
-        if (connections.size() > CONNECTIONS_KEEP_OPEN) {
-            connection.disconnect();
-            connections.remove(connection);
-        }
+    protected void connectionFinished(MySQLConnection connection) {
+        availableConnections.offer(connection);
     }
 
     private MySQLConnection openNewMySQLConnection() {
         MySQLConnection connection = new MySQLConnection(this);
         connection.connect();
         connections.add(connection);
+        availableConnections.add(connection);
         return connection;
     }
 

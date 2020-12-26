@@ -11,11 +11,9 @@ public class MySQLConnection {
 
     private Connection connection;
     private MySQL mySQL;
-    private boolean locked;
 
     public MySQLConnection(MySQL mySQL) {
         this.mySQL = mySQL;
-        this.locked = false;
     }
 
     protected boolean connect() {
@@ -61,15 +59,6 @@ public class MySQLConnection {
 
     public void finish() {
         mySQL.connectionFinished(this);
-        locked = false;
-    }
-
-    protected void lock() {
-        locked = true;
-    }
-
-    protected boolean isLocked() {
-        return locked;
     }
 
 }
