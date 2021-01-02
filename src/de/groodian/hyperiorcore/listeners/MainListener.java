@@ -32,7 +32,7 @@ public class MainListener implements Listener {
     public void handleChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         String spec = "";
-        if (plugin.getPrefix().getSpectators().contains(player)) {
+        if (plugin.getPrefix().isSpectator(player)) {
             spec = "§7[Spectator] ";
         }
         Rank rank = plugin.getRanks().get(player.getUniqueId());

@@ -95,8 +95,16 @@ public class Prefix {
         };
     }
 
-    public List<Player> getSpectators() {
-        return spectators;
+    public void addSpectator(Player player) {
+        spectators.add(player);
+    }
+
+    public void removeSpectator(Player player) {
+        spectators.remove(player);
+    }
+
+    public boolean isSpectator(Player player) {
+        return spectators.contains(player);
     }
 
 }
