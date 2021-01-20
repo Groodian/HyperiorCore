@@ -19,7 +19,6 @@ public class ItemBuilder {
     public ItemBuilder(Material material, short subID) {
         item = new ItemStack(material, 1, subID);
         itemMeta = item.getItemMeta();
-
     }
 
     public ItemBuilder(Material material) {
@@ -66,6 +65,11 @@ public class ItemBuilder {
     public ItemBuilder addGlow() {
         itemMeta.addEnchant(Enchantment.DURABILITY, 0, true);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        return this;
+    }
+
+    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
+        itemMeta.addEnchant(enchantment, level, true);
         return this;
     }
 
