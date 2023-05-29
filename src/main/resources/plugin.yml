@@ -1,0 +1,13 @@
+name: $name
+version: $version
+main: de.groodian.hyperiorcore.main.Main
+description: $description
+load: STARTUP
+authors:
+  - Groodian
+api-version: $apiVersion
+
+commands:
+  hyperiorranks:
+    description: Set, remove and see ranks
+    aliases: [ hr, ranks ]
