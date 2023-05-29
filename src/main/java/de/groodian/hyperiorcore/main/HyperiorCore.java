@@ -5,6 +5,7 @@ import de.groodian.hyperiorcore.boards.Prefix;
 import de.groodian.hyperiorcore.user.CoinSystem;
 import de.groodian.hyperiorcore.user.Level;
 import de.groodian.hyperiorcore.user.Ranks;
+import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 
 public class HyperiorCore {
@@ -12,6 +13,16 @@ public class HyperiorCore {
     public static DatabaseManager getDatabaseManager() {
         if (Mode.getModeType() == ModeType.BUKKIT)
             return Main.getInstance().getDatabaseManager();
+        else if (Mode.getModeType() == ModeType.BUNGEECORD)
+            return null;
+            //return BungeeMain.getInstance().getMySQLManager();
+        else
+            return null;
+    }
+
+    public static UserManager getUserManager() {
+        if (Mode.getModeType() == ModeType.BUKKIT)
+            return Main.getInstance().getUserManager();
         else if (Mode.getModeType() == ModeType.BUNGEECORD)
             return null;
             //return BungeeMain.getInstance().getMySQLManager();

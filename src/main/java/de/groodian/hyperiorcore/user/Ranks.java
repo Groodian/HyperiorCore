@@ -6,6 +6,9 @@ import de.groodian.hyperiorcore.util.UUIDFetcher;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public class Ranks {
 
@@ -22,11 +25,11 @@ public class Ranks {
     /**
      * This method should be executed async
      */
-    public String setRank(String name, String rankName) {
+    public Component setRank(String name, String rankName) {
         UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
 
         if (result == null) {
-            return "§cThis player does not exist.";
+            return Component.text("This player does not exist.", NamedTextColor.RED);
         }
 
         // make sure the user is created
@@ -39,7 +42,7 @@ public class Ranks {
             }
         }
         if (rank == null) {
-            return "§cCould not find the rank!";
+            return Component.text("Could not find the rank!", NamedTextColor.RED);
         }
 
         try {
@@ -58,24 +61,28 @@ public class Ranks {
                 cachedUser.setRank(rank);
             }
 
-            return "§a" + result.getName() + "§7 has now the rank " + rank.color() + rank.name() +
-                    "§7. (Previous rank: " + user.getRank().color() + user.getRank().name() + "§7";
+            return Component.text(result.getName(), NamedTextColor.GREEN)
+                    .append(Component.text(" has now the rank ", NamedTextColor.GRAY))
+                    .append(Component.text(rank.name(), rank.color()))
+                    .append(Component.text(". (Previous rank: ", NamedTextColor.GRAY))
+                    .append(Component.text(user.getRank().name(), user.getRank().color()))
+                    .append(Component.text(")", NamedTextColor.GRAY));
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return "§cAn error occurred";
+        return Component.text("An error occurred!", NamedTextColor.DARK_RED);
     }
 
     /**
      * This method should be executed async
      */
-    public String removeRank(String name) {
+    public Component removeRank(String name) {
         UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
 
         if (result == null) {
-            return "§cThis player does not exist.";
+            return Component.text("This player does not exist.", NamedTextColor.RED);
         }
 
         User user = userManager.loadUser(result.getUUID());
@@ -97,46 +104,51 @@ public class Ranks {
                     cachedUser.setRank(Rank.DEFAULT_RANK);
                 }
 
-                return "§a" + result.getName() + "§7 is no longer a " + user.getRank().color() +
-                        user.getRank().name() + "§7.";
+                return Component.text(result.getName(), NamedTextColor.GREEN)
+                        .append(Component.text(" is no longer a ", NamedTextColor.GRAY))
+                        .append(Component.text(user.getRank().name(), user.getRank().color()))
+                        .append(Component.text(".", NamedTextColor.GRAY));
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
         } else {
-            return "§a" + result.getName() + "§7 has no rank.";
+            return Component.text(result.getName(), NamedTextColor.GREEN)
+                    .append(Component.text(" has no rank.", NamedTextColor.GRAY));
         }
 
-        return "§cAn error occurred";
+        return Component.text("An error occurred!", NamedTextColor.DARK_RED);
     }
 
     /**
      * This method should be executed async
      */
-    public String info(String name) {
+    public Component info(String name) {
         UUIDFetcher.Result result = uuidFetcher.getNameAndUUIDFromName(name);
 
         if (result == null) {
-            return "§cThis player does not exist.";
+            return Component.text("This player does not exist.", NamedTextColor.RED);
         }
 
         User user = userManager.loadUser(result.getUUID());
 
         if (user != null) {
-            return "§a" + result.getName() + "§7 has the rank " + user.getRank().color() +
-                    user.getRank().name() + "§7.";
+            return Component.text(result.getName(), NamedTextColor.GREEN)
+                    .append(Component.text(" has the rank ", NamedTextColor.GRAY))
+                    .append(Component.text(user.getRank().name(), user.getRank().color()))
+                    .append(Component.text(".", NamedTextColor.GRAY));
         } else {
-            return "§a" + result.getName() + "§7 is not in the database.";
+            return Component.text(result.getName(), NamedTextColor.GREEN)
+                    .append(Component.text(" is not in the database.", NamedTextColor.GRAY));
         }
     }
 
     /**
      * This method should be executed async
      */
-    public String list() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("§7List:");
+    public Component list() {
+        TextComponent.Builder builder = Component.text().append(Component.text("List:", NamedTextColor.GRAY));
 
         try {
             DatabaseConnection databaseConnection = databaseManager.getConnection();
@@ -148,20 +160,22 @@ public class Ranks {
                 int rankValue = rs.getInt("rank");
                 for (Rank rank : Rank.RANKS) {
                     if (rank.value() == rankValue) {
-                        stringBuilder.append("\n").append(rank.longPrefix()).append(rs.getString("name"));
+                        builder.appendNewline()
+                                .append(rank.longPrefix())
+                                .append(Component.text(rs.getString("name"), rank.color()));
                     }
                 }
             }
 
             databaseConnection.finish();
 
-            return stringBuilder.toString();
+            return builder.build();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return "§cAn error occurred";
+        return Component.text("An error occurred!", NamedTextColor.DARK_RED);
     }
 
 }

@@ -49,6 +49,7 @@ public class Prefix {
 
     }
 
+
     private void editScoreboard(Scoreboard scoreboard, Player player) {
         Rank rank = plugin.getUserManager().get(player.getUniqueId()).getRank();
 
@@ -84,7 +85,7 @@ public class Prefix {
 
         if (!spectators.contains(player)) {
             player.playerListName(user.getRank().longPrefix()
-                                          .content(player.getName())
+                                          .append(Component.text(player.getName()))
                                           .append(Component.text(" [", NamedTextColor.GRAY))
                                           .append(Level.getFormattedLevel(user.getLevel()))
                                           .append(Component.text("]", NamedTextColor.GRAY)));

@@ -1,3 +1,4 @@
+/*
 package de.groodian.hyperiorcore.util;
 
 import com.mojang.authlib.GameProfile;
@@ -224,3 +225,4 @@ public class NPCOld extends SpawnAble {
     }
 
 }
+*/

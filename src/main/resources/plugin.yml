@@ -11,3 +11,6 @@ commands:
   hyperiorranks:
     description: Set, remove and see ranks
     aliases: [ hr, ranks ]
+  help:
+    description: Help
+    aliases: [ hilfe, h ]

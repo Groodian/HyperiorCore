@@ -4,8 +4,6 @@ import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.user.Rank;
 import de.groodian.hyperiorcore.util.SpawnAble;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import java.util.Arrays;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,27 +18,31 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MainListener implements Listener {
 
-    private static final List<String> COMMANDS_TO_BLOCK = Arrays.asList("/pl",
-                                                                        "/plugins",
-                                                                        "/bukkit:plugins",
-                                                                        "/bukkit:pl",
-                                                                        "/bukkit:?",
-                                                                        "/?",
-                                                                        "/icanhasbukkit",
-                                                                        "/version",
-                                                                        "/ver",
-                                                                        "/about",
-                                                                        "/bukkit:ver",
-                                                                        "/bukkit:version",
-                                                                        "/bukkit:about",
-                                                                        "/bukkit:help",
-                                                                        "/me",
-                                                                        "/tell",
-                                                                        "/minecraft:me",
-                                                                        "/minecraft:tell",
-                                                                        "/help");
+    private static final List<String> COMMANDS_TO_BLOCK = Arrays.asList(
+            "/pl",
+            "/plugins",
+            "/bukkit:plugins",
+            "/bukkit:pl",
+            "/bukkit:?",
+            "/?",
+            "/icanhasbukkit",
+            "/version",
+            "/ver",
+            "/about",
+            "/bukkit:ver",
+            "/bukkit:version",
+            "/bukkit:about",
+            "/bukkit:help",
+            "/me",
+            "/tell",
+            "/minecraft:me",
+            "/minecraft:tell"
+    );
 
     private final Main plugin;
 
@@ -59,11 +61,12 @@ public class MainListener implements Listener {
 
         Rank rank = plugin.getUserManager().get(player.getUniqueId()).getRank();
 
-        msg.append(rank.longPrefix().content(player.getName()))
+        msg.append(rank.longPrefix()
+                .append(Component.text(player.getName()))
                 .append(Component.text(" » ", NamedTextColor.GRAY))
-                .append(e.message());
+                .append(e.message().color(NamedTextColor.WHITE)));
 
-        e.message(msg.build());
+        e.renderer((source, sourceDisplayName, message, viewer) -> msg.build());
     }
 
     @EventHandler
@@ -117,9 +120,7 @@ public class MainListener implements Listener {
             for (String str1 : COMMANDS_TO_BLOCK) {
                 if (str0.equalsIgnoreCase(str1)) {
                     e.setCancelled(true);
-                    e.getPlayer()
-                            .sendMessage(
-                                    "§cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
+                    e.getPlayer().sendMessage(Component.text("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.", NamedTextColor.RED));
                 }
             }
         }

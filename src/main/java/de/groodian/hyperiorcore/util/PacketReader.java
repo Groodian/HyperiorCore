@@ -1,3 +1,4 @@
+/*
 package de.groodian.hyperiorcore.util;
 
 import io.netty.channel.Channel;
@@ -65,3 +66,5 @@ public abstract class PacketReader {
     }
 
 }
+
+*/

@@ -2,6 +2,8 @@ package de.groodian.hyperiorcore.main;
 
 import de.groodian.hyperiorcore.boards.HScoreboard;
 import de.groodian.hyperiorcore.boards.Prefix;
+import de.groodian.hyperiorcore.command.CommandManager;
+import de.groodian.hyperiorcore.commands.HelpCommand;
 import de.groodian.hyperiorcore.commands.RanksCommand;
 import de.groodian.hyperiorcore.listeners.MainListener;
 import de.groodian.hyperiorcore.user.CoinSystem;
@@ -10,8 +12,9 @@ import de.groodian.hyperiorcore.user.Ranks;
 import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 import de.groodian.hyperiorcore.util.SpawnAble;
+
 import java.util.List;
-import java.util.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -28,6 +31,7 @@ public class Main extends JavaPlugin {
 
     private DatabaseManager databaseManager;
     private UserManager userManager;
+    private CommandManager commandManager;
     private Ranks ranks;
     private Prefix prefix;
     private HScoreboard scoreboard;
@@ -37,22 +41,24 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         Mode.setModeType(ModeType.BUKKIT);
 
-        Output.send(PREFIX + "§aDas Plugin wird geladen....");
+        Output.send(PREFIX + "§aDas Plugin wird geladen...");
 
         instance = this;
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new MainListener(this), this);
 
-        Objects.requireNonNull(getCommand("hyperiorranks")).setExecutor(new RanksCommand(this));
-
-        databaseManager = new DatabaseManager("localhost", 5432, "hyperior", "hyperior", "PSq4s3qEa7X805a");
+        databaseManager = new DatabaseManager("localhost", 5444, "postgres", "postgres", "toor");
         userManager = new UserManager(databaseManager);
+        commandManager = new CommandManager(this);
         ranks = new Ranks(databaseManager, userManager);
         prefix = new Prefix(this);
         scoreboard = new HScoreboard(this);
         coinSystem = new CoinSystem(this);
         level = new Level(this);
+
+        commandManager.registerCommand(new RanksCommand(this));
+        commandManager.registerCommand(new HelpCommand(this));
 
         day();
         killAllMobs();
@@ -114,6 +120,10 @@ public class Main extends JavaPlugin {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     public Ranks getRanks() {

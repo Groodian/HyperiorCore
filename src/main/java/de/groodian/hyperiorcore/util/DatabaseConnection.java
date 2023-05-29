@@ -40,6 +40,7 @@ public class DatabaseConnection {
     protected boolean connect() {
         if (connection == null) {
             try {
+                Class.forName("org.postgresql.Driver");
                 connection = DriverManager.getConnection("jdbc:postgresql://" + databaseManager.hostname + ":" + databaseManager.port + "/" + databaseManager.database,
                                                          databaseManager.username,
                                                          databaseManager.password);
@@ -49,6 +50,8 @@ public class DatabaseConnection {
             } catch (SQLException e) {
                 Output.send(Main.PREFIX + "§4An error occurred while connecting to the database:");
                 Output.send(Main.PREFIX + "§4" + e.getMessage());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
         }
         return false;
