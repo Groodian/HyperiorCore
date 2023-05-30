@@ -1,7 +1,8 @@
 package de.groodian.hyperiorcore.commands;
 
-import de.groodian.hyperiorcore.command.HCommand;
+import de.groodian.hyperiorcore.command.HCommandPaper;
 import de.groodian.hyperiorcore.main.Main;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -9,13 +10,11 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class HelpCommand extends HCommand<CommandSender> {
+public class HelpCommandPaper extends HCommandPaper<CommandSender> {
 
     private final Main plugin;
 
-    public HelpCommand(Main plugin) {
+    public HelpCommandPaper(Main plugin) {
         super(CommandSender.class, "help", "", Component.empty(), List.of());
         this.plugin = plugin;
     }
@@ -26,24 +25,25 @@ public class HelpCommand extends HCommand<CommandSender> {
         msg.append(Component.text("HYPERIOR.DE", NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true));
         msg.appendNewline();
 
-        for (HCommand<? extends CommandSender> hCommand : plugin.getCommandManager().getHCommands()) {
-            if (hCommand.getName().equals("help")) {
+        for (HCommandPaper<? extends CommandSender> hCommandPaper : plugin.getHCommandManagerPaper().getHCommands()) {
+            if (hCommandPaper.getName().equals("help")) {
                 continue;
             }
 
             if (sender instanceof Player player) {
-                if (!plugin.getUserManager().get(player.getUniqueId()).has(hCommand.getPermission())) {
+                if (!plugin.getUserManager().get(player.getUniqueId()).has(hCommandPaper.getPermission())) {
                     continue;
                 }
             }
 
             msg.appendNewline()
                     .append(Component.text("   »", NamedTextColor.GOLD))
-                    .append(Component.text(" /" + hCommand.getName(), NamedTextColor.AQUA))
-                    .append(Component.text(" - " + hCommand.getDescription(), NamedTextColor.GRAY));
+                    .append(Component.text(" /" + hCommandPaper.getName(), NamedTextColor.AQUA))
+                    .append(Component.text(" - " + hCommandPaper.getDescription(), NamedTextColor.GRAY));
         }
 
         sendMsg(sender, msg.appendNewline().build());
     }
+
 
 }

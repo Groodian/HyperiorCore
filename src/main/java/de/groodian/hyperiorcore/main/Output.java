@@ -1,17 +1,16 @@
 package de.groodian.hyperiorcore.main;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 
 public class Output {
 
     public static void send(String msg) {
-        if (Mode.getModeType() == ModeType.BUKKIT)
-            Bukkit.getConsoleSender().sendMessage(msg);
-        else if (Mode.getModeType() == ModeType.BUNGEECORD)
-            Bukkit.getConsoleSender().sendMessage(msg);
-            //BungeeCord.getInstance().getConsole().sendMessage(new TextComponent(msg));
-        else
-            System.out.println(Main.PREFIX + "§4ERROR no mode for the output defined!");
+        switch (Mode.getModeType()) {
+            case PAPER -> Bukkit.getConsoleSender().sendMessage(LegacyComponentSerializer.legacySection().deserialize(msg));
+            case VELOCITY -> VelocityMain.getInstance().getLogger().info(msg);
+            default -> System.out.println("ERROR no mode for the output defined!");
+        }
     }
 
 }

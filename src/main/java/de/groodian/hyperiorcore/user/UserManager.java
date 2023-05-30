@@ -63,14 +63,8 @@ public class UserManager {
                     }
                 }
 
-                user = new User(uuid,
-                                rs.getString("name"),
-                                rank,
-                                rs.getInt("level"),
-                                rs.getInt("total_xp"),
-                                rs.getInt("coins"),
-                                rs.getObject("daily_bonus", OffsetDateTime.class),
-                                rs.getObject("daily_bonus_vip", OffsetDateTime.class));
+                user = new User(uuid, rs.getString("name"), rank, rs.getInt("level"), rs.getInt("total_xp"), rs.getInt("coins"),
+                        rs.getObject("daily_bonus", OffsetDateTime.class), rs.getObject("daily_bonus_vip", OffsetDateTime.class));
             }
 
             databaseConnection.finish();

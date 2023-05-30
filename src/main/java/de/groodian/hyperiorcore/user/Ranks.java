@@ -47,8 +47,7 @@ public class Ranks {
 
         try {
             DatabaseConnection databaseConnection = databaseManager.getConnection();
-            PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "UPDATE hyperior_mc.users SET rank = ? WHERE uuid = ?");
+            PreparedStatement ps = databaseConnection.getPreparedStatement("UPDATE hyperior_mc.users SET rank = ? WHERE uuid = ?");
 
             ps.setInt(1, rank.value());
             ps.setObject(2, result.getUUID());
@@ -91,8 +90,7 @@ public class Ranks {
 
             try {
                 DatabaseConnection databaseConnection = databaseManager.getConnection();
-                PreparedStatement ps = databaseConnection.getPreparedStatement(
-                        "UPDATE hyperior_mc.users SET rank = 0 WHERE uuid = ?");
+                PreparedStatement ps = databaseConnection.getPreparedStatement("UPDATE hyperior_mc.users SET rank = 0 WHERE uuid = ?");
 
                 ps.setObject(1, result.getUUID());
                 ps.executeUpdate();
@@ -114,8 +112,7 @@ public class Ranks {
             }
 
         } else {
-            return Component.text(result.getName(), NamedTextColor.GREEN)
-                    .append(Component.text(" has no rank.", NamedTextColor.GRAY));
+            return Component.text(result.getName(), NamedTextColor.GREEN).append(Component.text(" has no rank.", NamedTextColor.GRAY));
         }
 
         return Component.text("An error occurred!", NamedTextColor.DARK_RED);
@@ -152,17 +149,14 @@ public class Ranks {
 
         try {
             DatabaseConnection databaseConnection = databaseManager.getConnection();
-            PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "SELECT name, rank FROM hyperior_mc.users ORDER BY rank");
+            PreparedStatement ps = databaseConnection.getPreparedStatement("SELECT name, rank FROM hyperior_mc.users ORDER BY rank");
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int rankValue = rs.getInt("rank");
                 for (Rank rank : Rank.RANKS) {
                     if (rank.value() == rankValue) {
-                        builder.appendNewline()
-                                .append(rank.longPrefix())
-                                .append(Component.text(rs.getString("name"), rank.color()));
+                        builder.appendNewline().append(rank.longPrefix()).append(Component.text(rs.getString("name"), rank.color()));
                     }
                 }
             }

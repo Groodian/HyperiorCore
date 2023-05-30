@@ -41,9 +41,9 @@ public class DatabaseConnection {
         if (connection == null) {
             try {
                 Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection("jdbc:postgresql://" + databaseManager.hostname + ":" + databaseManager.port + "/" + databaseManager.database,
-                                                         databaseManager.username,
-                                                         databaseManager.password);
+                connection = DriverManager.getConnection(
+                        "jdbc:postgresql://" + databaseManager.hostname + ":" + databaseManager.port + "/" + databaseManager.database,
+                        databaseManager.username, databaseManager.password);
 
                 Output.send(Main.PREFIX + "§aSuccessfully connected to the database.");
                 return true;
@@ -71,7 +71,7 @@ public class DatabaseConnection {
         return false;
     }
 
-    private Connection getConnection() {
+    private Connection checkConnection() {
         try {
             if (!connection.isValid(2)) {
                 connection.close();
@@ -82,6 +82,10 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return connection;
+    }
+
+    public Connection getConnection() {
         return connection;
     }
 

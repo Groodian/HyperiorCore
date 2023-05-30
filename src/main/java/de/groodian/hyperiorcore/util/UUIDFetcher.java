@@ -36,13 +36,11 @@ public class UUIDFetcher {
             JSONObject object = (JSONObject) JSONValue.parseWithException(content.toString());
             String stringUUID = object.get("id")
                     .toString()
-                    .replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)",
-                                  "$1-$2-$3-$4-$5");
+                    .replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5");
 
             return new Result(object.get("name").toString(), UUID.fromString(stringUUID));
         } catch (Exception e) {
-            Bukkit.getConsoleSender()
-                    .sendMessage(Main.PREFIX + "§4An error occurred while fetching UUID for: §c" + name);
+            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§4An error occurred while fetching UUID for: §c" + name);
             Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§4" + e.getMessage());
         }
 

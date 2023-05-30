@@ -8,6 +8,14 @@ group = "de.groodian"
 version = "5.0.0-SNAPSHOT"
 description = "Core functions for Hyperior"
 
+val props = mapOf(
+        "name" to project.name,
+        "version" to project.version,
+        "description" to project.description,
+        "author" to "Groodian",
+        "apiVersion" to "1.19"
+)
+
 java {
     // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
@@ -18,6 +26,8 @@ dependencies {
     // paperweight.foliaDevBundle("1.19.4-R0.1-SNAPSHOT")
     // paperweight.devBundle("com.example.paperfork", "1.19.4-R0.1-SNAPSHOT")
     implementation("org.postgresql:postgresql:42.5.4")
+    compileOnly("com.velocitypowered:velocity-api:3.1.1")
+    annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 }
 
 repositories {
@@ -44,12 +54,6 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
-        val props = mapOf(
-                "name" to project.name,
-                "version" to project.version,
-                "description" to project.description,
-                "apiVersion" to "1.19"
-        )
         inputs.properties(props)
         filesMatching("plugin.yml") {
             expand(props)

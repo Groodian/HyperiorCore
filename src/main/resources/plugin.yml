@@ -4,7 +4,7 @@ main: de.groodian.hyperiorcore.main.Main
 description: $description
 load: STARTUP
 authors:
-  - Groodian
+  - "$author"
 api-version: $apiVersion
 
 commands:

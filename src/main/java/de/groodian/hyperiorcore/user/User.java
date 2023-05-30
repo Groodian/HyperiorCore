@@ -1,5 +1,6 @@
 package de.groodian.hyperiorcore.user;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -14,7 +15,8 @@ public class User {
     private OffsetDateTime dailyBonus;
     private OffsetDateTime dailyBonusVIP;
 
-    public User(UUID uuid, String name, Rank rank, int level, int totalXP, int coins, OffsetDateTime dailyBonus, OffsetDateTime dailyBonusVIP) {
+    public User(UUID uuid, String name, Rank rank, int level, int totalXP, int coins, OffsetDateTime dailyBonus,
+                OffsetDateTime dailyBonusVIP) {
         this.uuid = uuid;
         this.name = name;
         this.rank = rank;
@@ -37,6 +39,11 @@ public class User {
         }
 
         return false;
+    }
+
+    public boolean canCollect(OffsetDateTime offsetDateTime) {
+        Duration duration = Duration.between(offsetDateTime, OffsetDateTime.now());
+        return (duration.toMinutes() > DailyBonus.COLLECT_WAIT_MINUTES);
     }
 
     public UUID getUuid() {
@@ -83,7 +90,16 @@ public class User {
         return dailyBonus;
     }
 
+    public void setDailyBonus(OffsetDateTime dailyBonus) {
+        this.dailyBonus = dailyBonus;
+    }
+
     public OffsetDateTime getDailyBonusVIP() {
         return dailyBonusVIP;
     }
+
+    public void setDailyBonusVIP(OffsetDateTime dailyBonusVIP) {
+        this.dailyBonusVIP = dailyBonusVIP;
+    }
+
 }

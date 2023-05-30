@@ -10,20 +10,18 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 
 public class HScoreboard {
 
     private static final String OBJECTIVE_NAME = "SBbyGroodian";
     private static final Criteria CRITERIA = Criteria.create(OBJECTIVE_NAME);
-    private static final List<NamedTextColor> NAMED_TEXT_COLORS = NamedTextColor.NAMES.values().stream().toList();
+    private static final List<String> NAMED_TEXT_COLORS = List.of("§1", "§2", "§3", "§4", "§5", "§6", "§7", "§8", "§9", "§a", "§b", "§c",
+            "§d", "§e", "§f");
 
     private final Main plugin;
     private final Map<Player, ScoreboardCache> cache;
@@ -36,8 +34,6 @@ public class HScoreboard {
     public void registerScoreboard(Player player, Component title, int lines) {
         cache.put(player, new ScoreboardCache(lines, title.toString()));
 
-        System.out.println("register scoreboard: " + title.examinableName());
-
         Scoreboard scoreboard = player.getScoreboard();
 
         Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
@@ -47,12 +43,12 @@ public class HScoreboard {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         for (int i = 0; i < lines; i++) {
-            Team team = scoreboard.getTeam(i + "");
+            Team team = scoreboard.getTeam(String.valueOf(i));
             if (team != null)
                 team.unregister();
-            team = scoreboard.registerNewTeam(i + "");
-            team.addEntry(NAMED_TEXT_COLORS.get(i) + "");
-            objective.getScore(NAMED_TEXT_COLORS.get(i) + "").setScore(lines - i - 1);
+            team = scoreboard.registerNewTeam(String.valueOf(i));
+            team.addEntry(NAMED_TEXT_COLORS.get(i));
+            objective.getScore(NAMED_TEXT_COLORS.get(i)).setScore(lines - i - 1);
         }
 
         player.setScoreboard(scoreboard);
@@ -60,13 +56,13 @@ public class HScoreboard {
 
     public void registerScoreboard(Player player, Component title, int lines, int delay, int delayBetweenAnimation) {
         registerScoreboard(player, title, lines);
-        startTitleAnimation(player, title.examinableName(), delay, delayBetweenAnimation);
+        startTitleAnimation(player, PlainTextComponentSerializer.plainText().serialize(title), delay, delayBetweenAnimation);
     }
 
     public void updateLine(int line, Player player, Component lineContent) {
         Scoreboard scoreboard = player.getScoreboard();
 
-        Team team = scoreboard.getTeam(line + "");
+        Team team = scoreboard.getTeam(String.valueOf(line));
         if (team == null)
             return;
 
@@ -75,18 +71,15 @@ public class HScoreboard {
             return;
 
         String cachedLine = scoreboardCache.getLine(line);
-        if (cachedLine == null)
-            return;
-
         String lineContentString = GsonComponentSerializer.gson().serialize(lineContent);
-        if (cachedLine.equals(lineContentString))
+        if (cachedLine != null && cachedLine.equals(lineContentString))
             return;
 
         team.prefix(lineContent);
 
         cache.get(player).setLine(line, lineContentString);
 
-        // System.out.println("Update line " + line + " for " + player.getName());
+        //System.out.println("Update line " + line + " for " + player.getName());
     }
 
     public void updateTitle(Player player, Component title) {
@@ -101,11 +94,8 @@ public class HScoreboard {
             return;
 
         String cachedTitle = scoreboardCache.getTitle();
-        if (cachedTitle == null)
-            return;
-
         String titleString = GsonComponentSerializer.gson().serialize(title);
-        if (cachedTitle.equals(titleString))
+        if (cachedTitle != null && cachedTitle.equals(titleString))
             return;
 
         objective.displayName(title);
@@ -131,15 +121,11 @@ public class HScoreboard {
                         TextComponent.Builder coloredTitle = Component.text().decoration(TextDecoration.BOLD, true);
 
                         if (animationPos - 1 >= 0 && animationPos <= title.length()) {
-                            coloredTitle
-                                    .append(Component.text(title.substring(0, animationPos - 1), NamedTextColor.WHITE))
-                                    .append(Component.text(title.substring(animationPos - 1, animationPos),
-                                                           NamedTextColor.YELLOW));
+                            coloredTitle.append(Component.text(title.substring(0, animationPos - 1), NamedTextColor.WHITE))
+                                    .append(Component.text(title.substring(animationPos - 1, animationPos), NamedTextColor.YELLOW));
 
                         } else if (animationPos + 1 <= title.length()) {
-                            coloredTitle
-                                    .append(Component.text(title.substring(animationPos, animationPos + 1),
-                                                           NamedTextColor.YELLOW))
+                            coloredTitle.append(Component.text(title.substring(animationPos, animationPos + 1), NamedTextColor.YELLOW))
                                     .append(Component.text(title.substring(animationPos + 1), NamedTextColor.WHITE));
 
 

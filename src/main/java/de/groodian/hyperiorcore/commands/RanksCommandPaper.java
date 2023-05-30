@@ -1,17 +1,16 @@
 package de.groodian.hyperiorcore.commands;
 
-import de.groodian.hyperiorcore.command.HCommand;
-import de.groodian.hyperiorcore.command.HSubCommand;
+import de.groodian.hyperiorcore.command.HCommandPaper;
+import de.groodian.hyperiorcore.command.HSubCommandPaper;
 import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.util.Task;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class RanksCommand extends HCommand<CommandSender> {
+public class RanksCommandPaper extends HCommandPaper<CommandSender> {
 
     private static final Component PREFIX = Component.text("[", NamedTextColor.GRAY)
             .append(Component.text("Ranks", NamedTextColor.LIGHT_PURPLE))
@@ -19,7 +18,7 @@ public class RanksCommand extends HCommand<CommandSender> {
 
     protected final Main plugin;
 
-    public RanksCommand(Main plugin) {
+    public RanksCommandPaper(Main plugin) {
         super(CommandSender.class, "hyperiorranks", "Edit ranks", PREFIX, "ranks.all",
                 List.of(new Info(), new Set(), new Remove(), new ListAll(), new GetOP()));
         this.plugin = plugin;
@@ -29,10 +28,10 @@ public class RanksCommand extends HCommand<CommandSender> {
     protected void onCall(CommandSender sender) {
     }
 
-    private static class Info extends HSubCommand<RanksCommand, CommandSender> {
+    private static class Info extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
 
         public Info() {
-            super(RanksCommand.class, CommandSender.class, "info", List.of("player"));
+            super(RanksCommandPaper.class, CommandSender.class, "info", List.of("player"));
         }
 
         @Override
@@ -53,10 +52,10 @@ public class RanksCommand extends HCommand<CommandSender> {
         }
     }
 
-    private static class Set extends HSubCommand<RanksCommand, CommandSender> {
+    private static class Set extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
 
         public Set() {
-            super(RanksCommand.class, CommandSender.class, "set", List.of("player", "rank"));
+            super(RanksCommandPaper.class, CommandSender.class, "set", List.of("player", "rank"));
         }
 
         @Override
@@ -77,10 +76,10 @@ public class RanksCommand extends HCommand<CommandSender> {
         }
     }
 
-    private static class Remove extends HSubCommand<RanksCommand, CommandSender> {
+    private static class Remove extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
 
         public Remove() {
-            super(RanksCommand.class, CommandSender.class, "remove", List.of("player"));
+            super(RanksCommandPaper.class, CommandSender.class, "remove", List.of("player"));
         }
 
         @Override
@@ -101,10 +100,10 @@ public class RanksCommand extends HCommand<CommandSender> {
         }
     }
 
-    private static class ListAll extends HSubCommand<RanksCommand, CommandSender> {
+    private static class ListAll extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
 
         public ListAll() {
-            super(RanksCommand.class, CommandSender.class, "list", List.of());
+            super(RanksCommandPaper.class, CommandSender.class, "list", List.of());
         }
 
         @Override
@@ -125,10 +124,10 @@ public class RanksCommand extends HCommand<CommandSender> {
         }
     }
 
-    private static class GetOP extends HSubCommand<RanksCommand, Player> {
+    private static class GetOP extends HSubCommandPaper<RanksCommandPaper, Player> {
 
         public GetOP() {
-            super(RanksCommand.class, Player.class, "getop", List.of());
+            super(RanksCommandPaper.class, Player.class, "getop", List.of());
         }
 
         @Override

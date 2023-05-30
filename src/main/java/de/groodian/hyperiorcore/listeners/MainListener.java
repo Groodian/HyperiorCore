@@ -4,6 +4,8 @@ import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.user.Rank;
 import de.groodian.hyperiorcore.util.SpawnAble;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import java.util.Arrays;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,37 +14,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.util.Arrays;
-import java.util.List;
+import org.bukkit.event.player.*;
 
 public class MainListener implements Listener {
 
-    private static final List<String> COMMANDS_TO_BLOCK = Arrays.asList(
-            "/pl",
-            "/plugins",
-            "/bukkit:plugins",
-            "/bukkit:pl",
-            "/bukkit:?",
-            "/?",
-            "/icanhasbukkit",
-            "/version",
-            "/ver",
-            "/about",
-            "/bukkit:ver",
-            "/bukkit:version",
-            "/bukkit:about",
-            "/bukkit:help",
-            "/me",
-            "/tell",
-            "/minecraft:me",
-            "/minecraft:tell"
-    );
+    private static final List<String> COMMANDS_TO_BLOCK = Arrays.asList("/pl", "/plugins", "/bukkit:plugins", "/bukkit:pl", "/bukkit:?",
+            "/?", "/icanhasbukkit", "/version", "/ver", "/about", "/bukkit:ver", "/bukkit:version", "/bukkit:about", "/bukkit:help", "/me",
+            "/tell", "/minecraft:me", "/minecraft:tell");
 
     private final Main plugin;
 
@@ -120,7 +98,10 @@ public class MainListener implements Listener {
             for (String str1 : COMMANDS_TO_BLOCK) {
                 if (str0.equalsIgnoreCase(str1)) {
                     e.setCancelled(true);
-                    e.getPlayer().sendMessage(Component.text("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.", NamedTextColor.RED));
+                    e.getPlayer()
+                            .sendMessage(Component.text(
+                                    "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.",
+                                    NamedTextColor.RED));
                 }
             }
         }

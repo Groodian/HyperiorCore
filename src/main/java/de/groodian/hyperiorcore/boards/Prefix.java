@@ -63,10 +63,7 @@ public class Prefix {
         Team spectator = scoreboard.getTeam("999-Spectator");
         if (spectator == null) {
             spectator = scoreboard.registerNewTeam("999-Spectator");
-            spectator.prefix(Component.text()
-                                     .color(NamedTextColor.GRAY)
-                                     .decoration(TextDecoration.ITALIC, true)
-                                     .build());
+            spectator.prefix(Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true).build());
             spectator.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
             spectator.setCanSeeFriendlyInvisibles(true);
         }
@@ -84,14 +81,14 @@ public class Prefix {
         User user = plugin.getUserManager().get(player.getUniqueId());
 
         if (!spectators.contains(player)) {
-            player.playerListName(user.getRank().longPrefix()
-                                          .append(Component.text(player.getName()))
-                                          .append(Component.text(" [", NamedTextColor.GRAY))
-                                          .append(Level.getFormattedLevel(user.getLevel()))
-                                          .append(Component.text("]", NamedTextColor.GRAY)));
+            player.playerListName(user.getRank()
+                    .longPrefix()
+                    .append(Component.text(player.getName()))
+                    .append(Component.text(" [", NamedTextColor.GRAY))
+                    .append(Level.getFormattedLevel(user.getLevel()))
+                    .append(Component.text("]", NamedTextColor.GRAY)));
         } else {
-            player.playerListName(Component.text(player.getName(), NamedTextColor.GRAY)
-                                          .decoration(TextDecoration.ITALIC, true));
+            player.playerListName(Component.text(player.getName(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true));
         }
     }
 

@@ -2,19 +2,14 @@ package de.groodian.hyperiorcore.main;
 
 import de.groodian.hyperiorcore.boards.HScoreboard;
 import de.groodian.hyperiorcore.boards.Prefix;
-import de.groodian.hyperiorcore.command.CommandManager;
-import de.groodian.hyperiorcore.commands.HelpCommand;
-import de.groodian.hyperiorcore.commands.RanksCommand;
+import de.groodian.hyperiorcore.command.HCommandManagerPaper;
+import de.groodian.hyperiorcore.commands.HelpCommandPaper;
+import de.groodian.hyperiorcore.commands.RanksCommandPaper;
 import de.groodian.hyperiorcore.listeners.MainListener;
-import de.groodian.hyperiorcore.user.CoinSystem;
-import de.groodian.hyperiorcore.user.Level;
-import de.groodian.hyperiorcore.user.Ranks;
-import de.groodian.hyperiorcore.user.UserManager;
+import de.groodian.hyperiorcore.user.*;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 import de.groodian.hyperiorcore.util.SpawnAble;
-
 import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -31,15 +26,16 @@ public class Main extends JavaPlugin {
 
     private DatabaseManager databaseManager;
     private UserManager userManager;
-    private CommandManager commandManager;
+    private HCommandManagerPaper hCommandManagerPaper;
     private Ranks ranks;
     private Prefix prefix;
     private HScoreboard scoreboard;
     private CoinSystem coinSystem;
     private Level level;
+    private DailyBonus dailyBonus;
 
     public void onEnable() {
-        Mode.setModeType(ModeType.BUKKIT);
+        Mode.setModeType(ModeType.PAPER);
 
         Output.send(PREFIX + "§aDas Plugin wird geladen...");
 
@@ -48,17 +44,19 @@ public class Main extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new MainListener(this), this);
 
-        databaseManager = new DatabaseManager("localhost", 5444, "postgres", "postgres", "toor");
+        databaseManager = new DatabaseManager(HyperiorCore.DB_ADDRESS, HyperiorCore.DB_PORT, HyperiorCore.DB_DATABASE, HyperiorCore.DB_USER,
+                HyperiorCore.DB_PASSWORD);
         userManager = new UserManager(databaseManager);
-        commandManager = new CommandManager(this);
+        hCommandManagerPaper = new HCommandManagerPaper(this);
         ranks = new Ranks(databaseManager, userManager);
         prefix = new Prefix(this);
         scoreboard = new HScoreboard(this);
         coinSystem = new CoinSystem(this);
         level = new Level(this);
+        dailyBonus = new DailyBonus(this);
 
-        commandManager.registerCommand(new RanksCommand(this));
-        commandManager.registerCommand(new HelpCommand(this));
+        hCommandManagerPaper.registerCommand(this, new RanksCommandPaper(this));
+        hCommandManagerPaper.registerCommand(this, new HelpCommandPaper(this));
 
         day();
         killAllMobs();
@@ -122,8 +120,8 @@ public class Main extends JavaPlugin {
         return userManager;
     }
 
-    public CommandManager getCommandManager() {
-        return commandManager;
+    public HCommandManagerPaper getHCommandManagerPaper() {
+        return hCommandManagerPaper;
     }
 
     public Ranks getRanks() {
@@ -144,6 +142,10 @@ public class Main extends JavaPlugin {
 
     public Level getLevel() {
         return level;
+    }
+
+    public DailyBonus getDailyBonus() {
+        return dailyBonus;
     }
 
     public Plugin getPlugin() {

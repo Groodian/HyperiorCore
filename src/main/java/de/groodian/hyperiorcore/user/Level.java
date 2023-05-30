@@ -99,8 +99,7 @@ public class Level {
         if (user != null) {
             try {
                 DatabaseConnection databaseConnection = plugin.getDatabaseManager().getConnection();
-                PreparedStatement ps = databaseConnection.getPreparedStatement(
-                        "UPDATE hyperior_mc.users SET level = ? WHERE uuid = ?");
+                PreparedStatement ps = databaseConnection.getPreparedStatement("UPDATE hyperior_mc.users SET level = ? WHERE uuid = ?");
 
                 ps.setInt(1, level);
                 ps.setObject(2, uuid);

@@ -1,13 +1,12 @@
 package de.groodian.hyperiorcore.command;
 
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
-
-public abstract class HSubCommand<C extends HCommand<? extends CommandSender>, T extends CommandSender> {
+public abstract class HSubCommandPaper<C extends HCommandPaper<? extends CommandSender>, T extends CommandSender> {
 
     private final Class<C> hCommandClazz;
     private final Class<T> commandSenderClazz;
@@ -17,7 +16,7 @@ public abstract class HSubCommand<C extends HCommand<? extends CommandSender>, T
 
     protected C hCommand;
 
-    public HSubCommand(Class<C> hCommandClazz, Class<T> commandSenderClazz, String name, String permission, List<String> args) {
+    public HSubCommandPaper(Class<C> hCommandClazz, Class<T> commandSenderClazz, String name, String permission, List<String> args) {
         this.hCommandClazz = hCommandClazz;
         this.commandSenderClazz = commandSenderClazz;
         this.name = name;
@@ -25,7 +24,7 @@ public abstract class HSubCommand<C extends HCommand<? extends CommandSender>, T
         this.args = args;
     }
 
-    public HSubCommand(Class<C> hCommandClazz, Class<T> commandSenderClazz, String name, List<String> args) {
+    public HSubCommandPaper(Class<C> hCommandClazz, Class<T> commandSenderClazz, String name, List<String> args) {
         this(hCommandClazz, commandSenderClazz, name, null, args);
     }
 
@@ -47,8 +46,8 @@ public abstract class HSubCommand<C extends HCommand<? extends CommandSender>, T
         hCommand.sendMsg(sender, msg, color);
     }
 
-    public void setHCommand(HCommand<? extends CommandSender> hCommand) {
-        this.hCommand = hCommandClazz.cast(hCommand);
+    public void setHCommand(HCommandPaper<? extends CommandSender> hCommandPaper) {
+        this.hCommand = hCommandClazz.cast(hCommandPaper);
     }
 
     public String getName() {
