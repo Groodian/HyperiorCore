@@ -6,9 +6,10 @@ import de.groodian.hyperiorcore.command.HCommandManagerPaper;
 import de.groodian.hyperiorcore.commands.HelpCommandPaper;
 import de.groodian.hyperiorcore.commands.RanksCommandPaper;
 import de.groodian.hyperiorcore.listeners.MainListener;
+import de.groodian.hyperiorcore.spawnable.SpawnAble;
+import de.groodian.hyperiorcore.spawnable.SpawnAbleManager;
 import de.groodian.hyperiorcore.user.*;
 import de.groodian.hyperiorcore.util.DatabaseManager;
-import de.groodian.hyperiorcore.util.SpawnAble;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -26,6 +27,7 @@ public class Main extends JavaPlugin {
 
     private DatabaseManager databaseManager;
     private UserManager userManager;
+    private SpawnAbleManager spawnAbleManager;
     private HCommandManagerPaper hCommandManagerPaper;
     private Ranks ranks;
     private Prefix prefix;
@@ -47,6 +49,7 @@ public class Main extends JavaPlugin {
         databaseManager = new DatabaseManager(HyperiorCore.DB_ADDRESS, HyperiorCore.DB_PORT, HyperiorCore.DB_DATABASE, HyperiorCore.DB_USER,
                 HyperiorCore.DB_PASSWORD);
         userManager = new UserManager(databaseManager);
+        spawnAbleManager = new SpawnAbleManager();
         hCommandManagerPaper = new HCommandManagerPaper(this);
         ranks = new Ranks(databaseManager, userManager);
         prefix = new Prefix(this);
@@ -101,7 +104,7 @@ public class Main extends JavaPlugin {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+                for (SpawnAble spawnAble : spawnAbleManager.getSpawnAbleList()) {
                     spawnAble.update();
                 }
             }
@@ -118,6 +121,10 @@ public class Main extends JavaPlugin {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public SpawnAbleManager getSpawnAbleManager() {
+        return spawnAbleManager;
     }
 
     public HCommandManagerPaper getHCommandManagerPaper() {

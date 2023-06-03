@@ -141,7 +141,13 @@ public class ItemBuilder {
 
     public static <T, Z> Z getCustomData(ItemStack itemStack, String key, PersistentDataType<T, Z> persistentDataType) {
         NamespacedKey namespacedKey = new NamespacedKey(CONTAINER_NAMESPACE, key);
-        PersistentDataContainer persistentDataContainer = itemStack.getItemMeta().getPersistentDataContainer();
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return null;
+        }
+
+        PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
         return persistentDataContainer.get(namespacedKey, persistentDataType);
     }
 

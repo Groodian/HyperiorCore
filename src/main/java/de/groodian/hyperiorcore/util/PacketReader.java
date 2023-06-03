@@ -1,70 +1,48 @@
-/*
 package de.groodian.hyperiorcore.util;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.server.v1_8_R3.Packet;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-
-import java.lang.reflect.Field;
 import java.util.List;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 public abstract class PacketReader {
 
-    protected Player player;
-    private Channel channel;
+    private static final String CHANNEL_HANDLER_NAME = "Hyperior_";
 
-    public PacketReader(Player player) {
+    protected final Player player;
+
+    private final String channelHandlerName;
+    private final Channel channel;
+
+    public PacketReader(String channelHandlerName, Player player) {
         this.player = player;
-    }
+        this.channelHandlerName = CHANNEL_HANDLER_NAME + channelHandlerName;
 
-    public void inject() {
-        CraftPlayer cPlayer = (CraftPlayer) this.player;
-        channel = cPlayer.getHandle().playerConnection.networkManager.channel;
-        channel.pipeline().addAfter("decoder", "HyperiorPacketInjector", new MessageToMessageDecoder<Packet<?>>() {
-
-            @Override
-            protected void decode(ChannelHandlerContext arg0, Packet<?> arg1, List<Object> arg2) throws Exception {
-                arg2.add(arg1);
-                readPacket(arg1);
-            }
-
-        });
-    }
-
-    public void uninject() {
-        if (channel.pipeline().get("HyperiorPacketInjector") != null) {
-            channel.pipeline().remove("HyperiorPacketInjector");
-        }
+        ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
+        this.channel = connection.connection.channel;
     }
 
     protected abstract void readPacket(Packet<?> packet);
 
-    protected void setValue(Object obj, String name, Object value) {
-        Field field;
-        try {
-            field = obj.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            field.set(obj, value);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public void inject() {
+        uninject();
+
+        channel.pipeline().addAfter("decoder", channelHandlerName, new MessageToMessageDecoder<Packet<?>>() {
+            @Override
+            protected void decode(ChannelHandlerContext ctx, Packet<?> packet, List<Object> out) {
+                out.add(packet);
+                readPacket(packet);
+            }
+        });
     }
 
-    protected Object getValue(Object obj, String name) {
-        Field field;
-        try {
-            field = obj.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            return field.get(obj);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+    public void uninject() {
+        if (channel.pipeline().get(channelHandlerName) != null) {
+            channel.pipeline().remove(channelHandlerName);
         }
-        return null;
     }
-
 }
-
-*/

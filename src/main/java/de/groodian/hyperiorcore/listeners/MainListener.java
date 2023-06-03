@@ -1,8 +1,9 @@
 package de.groodian.hyperiorcore.listeners;
 
 import de.groodian.hyperiorcore.main.Main;
+import de.groodian.hyperiorcore.spawnable.NPCPacketReader;
+import de.groodian.hyperiorcore.spawnable.SpawnAble;
 import de.groodian.hyperiorcore.user.Rank;
-import de.groodian.hyperiorcore.util.SpawnAble;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -59,11 +60,14 @@ public class MainListener implements Listener {
         // Muss sein da das Scoreboard aus irgendeinem Grund manchmal gespeichert wird
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 
-        for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+        for (SpawnAble spawnAble : plugin.getSpawnAbleManager().getSpawnAbleList()) {
             if (spawnAble.isShowAll()) {
                 spawnAble.show(player);
             }
         }
+
+        NPCPacketReader npcPacketReader = new NPCPacketReader(plugin, player);
+        npcPacketReader.inject();
 
         plugin.getPrefix().setPrefix(player);
         plugin.getPrefix().setListName(player);
@@ -76,7 +80,7 @@ public class MainListener implements Listener {
         Player player = e.getPlayer();
 
         plugin.getScoreboard().removeFromCache(player);
-        for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+        for (SpawnAble spawnAble : plugin.getSpawnAbleManager().getSpawnAbleList()) {
             spawnAble.hide(player);
         }
 
@@ -86,7 +90,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void handleTeleport(PlayerTeleportEvent e) {
         Player player = e.getPlayer();
-        for (SpawnAble spawnAble : SpawnAble.spawnAbles) {
+        for (SpawnAble spawnAble : plugin.getSpawnAbleManager().getSpawnAbleList()) {
             spawnAble.updateFor(player, e.getTo());
         }
     }

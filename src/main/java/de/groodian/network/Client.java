@@ -1,5 +1,6 @@
 package de.groodian.network;
 
+import de.groodian.hyperiorcore.main.Output;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -8,14 +9,13 @@ import java.net.SocketException;
 
 public abstract class Client {
 
-    private DataPackage loginPack;
-    private InetSocketAddress address;
+    private final DataPackage loginPack;
+    private final InetSocketAddress address;
+    private final Thread mainThread;
 
     private Socket login;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-
-    private Thread mainThread;
     private boolean listening;
 
     public Client(String hostname, int port, DataPackage loginPack) {
@@ -23,7 +23,7 @@ public abstract class Client {
         address = new InetSocketAddress(hostname, port);
         listening = true;
 
-        mainThread = new Thread(() -> login());
+        mainThread = new Thread(this::login);
         mainThread.start();
     }
 
@@ -37,14 +37,14 @@ public abstract class Client {
 
                 try {
                     if (oos != null) {
-                        System.out.println("[ServiceClient] Sending pack: " + pack);
+                        Output.send("[ServiceClient] Sending pack: " + pack);
                         oos.writeObject(pack);
                         oos.flush();
                     } else {
-                        System.err.println("[ServiceClient] Message could not be sent, because the client is not logged in!");
+                        Output.send("[ServiceClient] Message could not be sent, because the client is not logged in!");
                     }
                 } catch (Exception e) {
-                    System.err.println("[ServiceClient] Message could not be sent!");
+                    Output.send("[ServiceClient] Message could not be sent!");
                 }
 
             }).start();
@@ -54,12 +54,12 @@ public abstract class Client {
     private void login() {
         if (listening) {
             try {
-                System.out.println("[ServiceClient] Connecting...");
+                Output.send("[ServiceClient] Connecting...");
                 login = new Socket();
                 login.connect(address, 5000);
-                System.out.println("[ServiceClient] Connected to: " + login.getRemoteSocketAddress());
+                Output.send("[ServiceClient] Connected to: " + login.getRemoteSocketAddress());
 
-                System.out.println("[ServiceClient] Logging in...");
+                Output.send("[ServiceClient] Logging in...");
                 oos = new ObjectOutputStream(new BufferedOutputStream(login.getOutputStream()));
                 oos.writeObject(loginPack);
                 oos.flush();
@@ -67,15 +67,15 @@ public abstract class Client {
                 // header on construction. therefore, it is blocking until it receives that
                 // header over the socket.
                 ois = new ObjectInputStream(new BufferedInputStream(login.getInputStream()));
-                System.out.println("[ServiceClient] Logged in.");
+                Output.send("[ServiceClient] Logged in.");
 
                 onSuccessfulLogin();
                 startListening();
             } catch (ConnectException e) {
-                System.err.println("[ServiceClient] The server is unreachable.");
+                Output.send("[ServiceClient] The server is unreachable.");
                 repairConnection();
             } catch (Exception e) {
-                System.err.println("[ServiceClient] An error occurred.");
+                Output.send("[ServiceClient] An error occurred.");
                 e.printStackTrace();
                 repairConnection();
             }
@@ -88,18 +88,18 @@ public abstract class Client {
                 // Waiting for messages
                 Object pack = ois.readObject();
                 if (pack instanceof DataPackage) {
-                    System.out.println("[ServiceClient] Pack received: " + pack);
+                    Output.send("[ServiceClient] Pack received: " + pack);
                     handleDataPackage((DataPackage) pack);
                 } else {
-                    System.err.println("[ServiceClient] Unknown pack: " + pack);
+                    Output.send("[ServiceClient] Unknown pack: " + pack);
                 }
 
             }
         } catch (SocketException | EOFException e) {
-            System.err.println("[ServiceClient] Connection lost.");
+            Output.send("[ServiceClient] Connection lost.");
             repairConnection();
         } catch (Exception e) {
-            System.err.println("[ServiceClient] An error occurred.");
+            Output.send("[ServiceClient] An error occurred.");
             e.printStackTrace();
             repairConnection();
         }
@@ -107,7 +107,7 @@ public abstract class Client {
 
     private void repairConnection() {
         if (listening) {
-            System.out.println("[ServiceClient] Trying to reconnect in 5 seconds.");
+            Output.send("[ServiceClient] Trying to reconnect in 5 seconds.");
             closeAllStreams();
 
             try {
@@ -142,11 +142,11 @@ public abstract class Client {
     }
 
     public void stop() {
-        System.out.println("[ServiceClient] Closing connection...");
+        Output.send("[ServiceClient] Closing connection...");
         listening = false;
         closeAllStreams();
         mainThread.interrupt();
-        System.out.println("[ServiceClient] Connection closed.");
+        Output.send("[ServiceClient] Connection closed.");
     }
 
 }

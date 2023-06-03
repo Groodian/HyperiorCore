@@ -1,4 +1,4 @@
-package de.groodian.hyperiorcore.util;
+package de.groodian.hyperiorcore.spawnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 public abstract class SpawnAble {
 
-    public static List<SpawnAble> spawnAbles = new ArrayList<>();
     private static final int MAX_DISTANCE = 50;
     private static final int RESPAWN_TIME = 120000;
 
@@ -26,8 +25,6 @@ public abstract class SpawnAble {
         showAll = false;
         showFor = new ArrayList<>();
         isSetFor = new HashMap<>();
-
-        spawnAbles.add(this);
     }
 
     public void showAll() {
@@ -83,11 +80,6 @@ public abstract class SpawnAble {
         for (Player player : temp) {
             hide(player);
         }
-    }
-
-    public void destroy() {
-        hideForAll();
-        spawnAbles.remove(this);
     }
 
     public void update() {

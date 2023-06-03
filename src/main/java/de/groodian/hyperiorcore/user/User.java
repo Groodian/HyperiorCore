@@ -42,6 +42,9 @@ public class User {
     }
 
     public boolean canCollect(OffsetDateTime offsetDateTime) {
+        if (offsetDateTime == null)
+            return true;
+
         Duration duration = Duration.between(offsetDateTime, OffsetDateTime.now());
         return (duration.toMinutes() > DailyBonus.COLLECT_WAIT_MINUTES);
     }

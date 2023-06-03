@@ -43,9 +43,11 @@ public abstract class GUI implements InventoryHolder {
             for (ItemStack itemStack : inventory.getContents()) {
                 if (itemStack != null) {
                     String data = ItemBuilder.getCustomData(itemStack, "gui", PersistentDataType.STRING);
-                    if (data.equals(entry.getKey().toString())) {
-                        found = true;
-                        break;
+                    if (data != null) {
+                        if (data.equals(entry.getKey().toString())) {
+                            found = true;
+                            break;
+                        }
                     }
                 }
             }

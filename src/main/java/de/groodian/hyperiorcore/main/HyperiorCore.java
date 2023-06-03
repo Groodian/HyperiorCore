@@ -3,6 +3,7 @@ package de.groodian.hyperiorcore.main;
 import de.groodian.hyperiorcore.boards.HScoreboard;
 import de.groodian.hyperiorcore.boards.Prefix;
 import de.groodian.hyperiorcore.command.HCommandManagerPaper;
+import de.groodian.hyperiorcore.spawnable.SpawnAbleManager;
 import de.groodian.hyperiorcore.user.*;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 
@@ -28,6 +29,13 @@ public class HyperiorCore {
             return Main.getInstance().getUserManager();
         else if (Mode.getModeType() == ModeType.VELOCITY)
             return VelocityMain.getInstance().getUserManager();
+        else
+            return null;
+    }
+
+    public static SpawnAbleManager getSpawnAbleManager() {
+        if (Mode.getModeType() == ModeType.PAPER)
+            return Main.getInstance().getSpawnAbleManager();
         else
             return null;
     }
