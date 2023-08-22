@@ -6,11 +6,18 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.groodian.hyperiorcore.listeners.MainListenerVelocity;
 import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 import org.slf4j.Logger;
 
-@Plugin(id = "hyperiorcore", name = "HyperiorCore", version = "5.0.0-SNAPSHOT", description = "Core functions for Hyperior", authors = {"Groodian"})
+@Plugin(
+        id = "hyperiorcore",
+        name = "HyperiorCore",
+        version = "5.0.0-SNAPSHOT",
+        description = "Core functions for Hyperior",
+        authors = {"Groodian"}
+)
 public class VelocityMain {
 
     private static VelocityMain instance;
@@ -38,8 +45,9 @@ public class VelocityMain {
                 HyperiorCore.DB_PASSWORD);
         userManager = new UserManager(databaseManager);
 
+        server.getEventManager().register(this, new MainListenerVelocity(this));
+
         Output.send(Main.PREFIX + "§aGeladen!");
-        //server.getEventManager().register(this, new PluginListener());
     }
 
     @Subscribe

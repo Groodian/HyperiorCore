@@ -15,6 +15,11 @@ public class SpawnAbleManager {
         spawnAbleList.add(spawnAble);
     }
 
+    public void destroySpawnAble(SpawnAble spawnAble) {
+        spawnAble.hideForAll();
+        spawnAbleList.remove(spawnAble);
+    }
+
     public List<SpawnAble> getSpawnAbleList() {
         return spawnAbleList;
     }

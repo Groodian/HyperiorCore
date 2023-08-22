@@ -90,6 +90,12 @@ public class DatabaseConnection {
     }
 
     public void finish() {
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         databaseManager.connectionFinished(this);
     }
 

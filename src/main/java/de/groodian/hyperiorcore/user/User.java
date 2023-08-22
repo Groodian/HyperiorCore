@@ -14,9 +14,17 @@ public class User {
     private int coins;
     private OffsetDateTime dailyBonus;
     private OffsetDateTime dailyBonusVIP;
+    private UUID ban;
+    private int logins;
+    private OffsetDateTime firstLogin;
+    private OffsetDateTime lastLogin;
+    private OffsetDateTime lastLogout;
+    private int loginDays;
+    private int connectionTime;
 
     public User(UUID uuid, String name, Rank rank, int level, int totalXP, int coins, OffsetDateTime dailyBonus,
-                OffsetDateTime dailyBonusVIP) {
+                OffsetDateTime dailyBonusVIP, UUID ban, int logins, OffsetDateTime firstLogin, OffsetDateTime lastLogin,
+                OffsetDateTime lastLogout, int loginDays, int connectionTime) {
         this.uuid = uuid;
         this.name = name;
         this.rank = rank;
@@ -25,6 +33,13 @@ public class User {
         this.coins = coins;
         this.dailyBonus = dailyBonus;
         this.dailyBonusVIP = dailyBonusVIP;
+        this.ban = ban;
+        this.logins = logins;
+        this.firstLogin = firstLogin;
+        this.lastLogin = lastLogin;
+        this.lastLogout = lastLogout;
+        this.loginDays = loginDays;
+        this.connectionTime = connectionTime;
     }
 
     public boolean has(String permission) {
@@ -103,6 +118,10 @@ public class User {
 
     public void setDailyBonusVIP(OffsetDateTime dailyBonusVIP) {
         this.dailyBonusVIP = dailyBonusVIP;
+    }
+
+    public UUID getBan() {
+        return ban;
     }
 
 }

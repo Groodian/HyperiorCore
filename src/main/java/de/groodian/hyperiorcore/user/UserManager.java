@@ -49,7 +49,7 @@ public class UserManager {
         try {
             DatabaseConnection databaseConnection = databaseManager.getConnection();
             PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "SELECT name, rank, level, total_xp, coins, daily_bonus, daily_bonus_vip FROM hyperior_mc.users WHERE uuid = ?");
+                    "SELECT name, rank, level, total_xp, coins, daily_bonus, daily_bonus_vip, ban, logins, first_login, last_login, last_logout, login_days, connection_time FROM hyperior_mc.users WHERE uuid = ?");
             ps.setObject(1, uuid);
             ResultSet rs = ps.executeQuery();
 
@@ -63,8 +63,22 @@ public class UserManager {
                     }
                 }
 
-                user = new User(uuid, rs.getString("name"), rank, rs.getInt("level"), rs.getInt("total_xp"), rs.getInt("coins"),
-                        rs.getObject("daily_bonus", OffsetDateTime.class), rs.getObject("daily_bonus_vip", OffsetDateTime.class));
+                user = new User(uuid,
+                        rs.getString("name"),
+                        rank,
+                        rs.getInt("level"),
+                        rs.getInt("total_xp"),
+                        rs.getInt("coins"),
+                        rs.getObject("daily_bonus", OffsetDateTime.class),
+                        rs.getObject("daily_bonus_vip", OffsetDateTime.class),
+                        rs.getObject("ban", UUID.class),
+                        rs.getInt("logins"),
+                        rs.getObject("first_login", OffsetDateTime.class),
+                        rs.getObject("last_login", OffsetDateTime.class),
+                        rs.getObject("last_logout", OffsetDateTime.class),
+                        rs.getInt("login_days"),
+                        rs.getInt("connection_time")
+                );
             }
 
             databaseConnection.finish();
@@ -79,13 +93,9 @@ public class UserManager {
         try {
             DatabaseConnection databaseConnection = databaseManager.getConnection();
             PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "INSERT INTO hyperior_mc.users (uuid, name, rank, level, total_xp, coins) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uuid) DO NOTHING");
+                    "INSERT INTO hyperior_mc.users (uuid, name, rank, level, total_xp, coins, logins, first_login, last_login, login_days, connection_time) VALUES (?, ?, 0, 0, 0, 0, 0, now(), now(), 0, 0) ON CONFLICT (uuid) DO NOTHING");
             ps.setObject(1, uuid);
             ps.setString(2, name);
-            ps.setInt(3, 0);
-            ps.setInt(4, 0);
-            ps.setInt(5, 0);
-            ps.setInt(6, 0);
             ps.executeUpdate();
             databaseConnection.finish();
         } catch (SQLException e) {

@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import java.util.List;
+import java.util.NoSuchElementException;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
@@ -31,13 +32,18 @@ public abstract class PacketReader {
     public void inject() {
         uninject();
 
-        channel.pipeline().addAfter("decoder", channelHandlerName, new MessageToMessageDecoder<Packet<?>>() {
-            @Override
-            protected void decode(ChannelHandlerContext ctx, Packet<?> packet, List<Object> out) {
-                out.add(packet);
-                readPacket(packet);
-            }
-        });
+        try {
+            channel.pipeline().addAfter("decoder", channelHandlerName, new MessageToMessageDecoder<Packet<?>>() {
+                @Override
+                protected void decode(ChannelHandlerContext ctx, Packet<?> packet, List<Object> out) {
+                    out.add(packet);
+                    readPacket(packet);
+                }
+            });
+        } catch (NoSuchElementException e) {
+            // ignore, only happens if player immediately disconnects after join
+        }
+
     }
 
     public void uninject() {

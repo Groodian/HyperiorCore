@@ -4,7 +4,11 @@ import de.groodian.hyperiorcore.boards.HScoreboard;
 import de.groodian.hyperiorcore.boards.Prefix;
 import de.groodian.hyperiorcore.command.HCommandManagerPaper;
 import de.groodian.hyperiorcore.spawnable.SpawnAbleManager;
-import de.groodian.hyperiorcore.user.*;
+import de.groodian.hyperiorcore.user.CoinSystem;
+import de.groodian.hyperiorcore.user.DailyBonus;
+import de.groodian.hyperiorcore.user.Level;
+import de.groodian.hyperiorcore.user.Ranks;
+import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManager;
 
 public class HyperiorCore {

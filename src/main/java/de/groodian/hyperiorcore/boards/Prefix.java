@@ -51,7 +51,11 @@ public class Prefix {
 
 
     private void editScoreboard(Scoreboard scoreboard, Player player) {
-        Rank rank = plugin.getUserManager().get(player.getUniqueId()).getRank();
+        User user = plugin.getUserManager().get(player.getUniqueId());
+        if (user == null) {
+            return;
+        }
+        Rank rank = user.getRank();
 
         String teamName = rank.value() + "-" + rank.name();
         Team team = scoreboard.getTeam(teamName);
@@ -79,6 +83,9 @@ public class Prefix {
 
     public void setListName(final Player player) {
         User user = plugin.getUserManager().get(player.getUniqueId());
+        if (user == null) {
+            return;
+        }
 
         if (!spectators.contains(player)) {
             player.playerListName(user.getRank()

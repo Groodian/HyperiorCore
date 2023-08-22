@@ -1,5 +1,15 @@
 CREATE SCHEMA IF NOT EXISTS hyperior_mc;
 
+CREATE TABLE IF NOT EXISTS hyperior_mc.users_ban_history (
+        id                  UUID NOT NULL PRIMARY KEY,
+        target              UUID NOT NULL,
+        created_by          UUID NOT NULL,
+        type                INTEGER NOT NULL,
+        reason              VARCHAR(256) NOT NULL,
+        created_at          TIMESTAMP WITH TIME ZONE NOT NULL,
+        duration            INTERVAL
+);
+
 CREATE TABLE IF NOT EXISTS hyperior_mc.users (
         uuid                UUID NOT NULL PRIMARY KEY,
         name                VARCHAR(64) NOT NULL,
@@ -8,7 +18,14 @@ CREATE TABLE IF NOT EXISTS hyperior_mc.users (
         total_xp            INTEGER NOT NULL,
         coins               INTEGER NOT NULL,
         daily_bonus         TIMESTAMP WITH TIME ZONE,
-        daily_bonus_vip     TIMESTAMP WITH TIME ZONE
+        daily_bonus_vip     TIMESTAMP WITH TIME ZONE,
+        ban                 UUID REFERENCES hyperior_mc.users_ban_history(id),
+        logins              INTEGER NOT NULL,
+        first_login         TIMESTAMP WITH TIME ZONE NOT NULL,
+        last_login          TIMESTAMP WITH TIME ZONE NOT NULL,
+        last_logout         TIMESTAMP WITH TIME ZONE,
+        login_days          INTEGER NOT NULL,
+        connection_time     INTEGER NOT NULL
 );
 
 -- CREATE TABLE IF NOT EXISTS data (UUID VARCHAR(100), playername VARCHAR(100), logins INT(100), firstlogin VARCHAR(100), lastlogin VARCHAR(100), lastlogout VARCHAR(100), lastip VARCHAR(100), logindays INT(100), connectiontime BIGINT(100))

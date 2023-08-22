@@ -74,7 +74,7 @@ public abstract class SpawnAble {
         }
     }
 
-    private void hideForAll() {
+    public void hideForAll() {
         List<Player> temp = new ArrayList<>(showFor);
 
         for (Player player : temp) {

@@ -35,6 +35,9 @@ public class Level {
             public void run() {
 
                 final User user = plugin.getUserManager().get(player.getUniqueId());
+                if (user == null) {
+                    return;
+                }
 
                 if (pointsForLevel(user.getLevel() + 1) <= user.getTotalXP()) {
                     new Task(plugin.getPlugin()) {

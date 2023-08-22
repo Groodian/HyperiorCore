@@ -61,7 +61,8 @@ public class DailyBonus {
         try {
             DatabaseConnection databaseConnection = plugin.getDatabaseManager().getConnection();
             PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "UPDATE hyperior_mc.users SET " + name + " = now() WHERE uuid = ? AND (" + name + " IS NULL OR (" + name + " + interval '" + COLLECT_WAIT_MINUTES + " minutes' < now()))");
+                    "UPDATE hyperior_mc.users SET " + name + " = now() WHERE uuid = ? AND (" + name + " IS NULL OR (" + name +
+                    " + interval '" + COLLECT_WAIT_MINUTES + " minutes' < now()))");
 
             ps.setObject(1, player.getUniqueId());
             int rows = ps.executeUpdate();
