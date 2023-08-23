@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class UserManager {
 
     public UserManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        this.cache = new HashMap<>();
+        this.cache = Collections.synchronizedMap(new HashMap<>());
     }
 
     public User get(UUID uuid) {
