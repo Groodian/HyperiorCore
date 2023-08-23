@@ -26,6 +26,7 @@ dependencies {
     // paperweight.foliaDevBundle("1.19.4-R0.1-SNAPSHOT")
     // paperweight.devBundle("com.example.paperfork", "1.19.4-R0.1-SNAPSHOT")
     implementation("org.postgresql:postgresql:42.5.4")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
     annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 }

@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.groodian.hyperiorcore.command.HCommandManagerVelocity;
 import de.groodian.hyperiorcore.listeners.MainListenerVelocity;
 import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManager;
@@ -24,6 +25,7 @@ public class VelocityMain {
 
     private final ProxyServer server;
     private final Logger logger;
+    private HCommandManagerVelocity hCommandManagerVelocity;
     private DatabaseManager databaseManager;
     private UserManager userManager;
 
@@ -41,6 +43,7 @@ public class VelocityMain {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         Output.send(Main.PREFIX + "§aDas Plugin wird geladen...");
 
+        hCommandManagerVelocity = new HCommandManagerVelocity(this);
         databaseManager = new DatabaseManager(HyperiorCore.DB_ADDRESS, HyperiorCore.DB_PORT, HyperiorCore.DB_DATABASE, HyperiorCore.DB_USER,
                 HyperiorCore.DB_PASSWORD);
         userManager = new UserManager(databaseManager);
@@ -69,6 +72,10 @@ public class VelocityMain {
 
     public Logger getLogger() {
         return logger;
+    }
+
+    public HCommandManagerVelocity getHCommandManagerVelocity() {
+        return hCommandManagerVelocity;
     }
 
     public DatabaseManager getDatabaseManager() {

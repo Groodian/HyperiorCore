@@ -3,6 +3,7 @@ package de.groodian.hyperiorcore.main;
 import de.groodian.hyperiorcore.boards.HScoreboard;
 import de.groodian.hyperiorcore.boards.Prefix;
 import de.groodian.hyperiorcore.command.HCommandManagerPaper;
+import de.groodian.hyperiorcore.command.HCommandManagerVelocity;
 import de.groodian.hyperiorcore.spawnable.SpawnAbleManager;
 import de.groodian.hyperiorcore.user.CoinSystem;
 import de.groodian.hyperiorcore.user.DailyBonus;
@@ -47,6 +48,13 @@ public class HyperiorCore {
     public static HCommandManagerPaper getHCommandManagerPaper() {
         if (Mode.getModeType() == ModeType.PAPER)
             return Main.getInstance().getHCommandManagerPaper();
+        else
+            return null;
+    }
+
+    public static HCommandManagerVelocity getHCommandManagerVelocity() {
+        if (Mode.getModeType() == ModeType.VELOCITY)
+            return VelocityMain.getInstance().getHCommandManagerVelocity();
         else
             return null;
     }

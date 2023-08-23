@@ -124,4 +124,28 @@ public class User {
         return ban;
     }
 
+    public int getLogins() {
+        return logins;
+    }
+
+    public OffsetDateTime getFirstLogin() {
+        return firstLogin;
+    }
+
+    public OffsetDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public OffsetDateTime getLastLogout() {
+        return lastLogout;
+    }
+
+    public int getLoginDays() {
+        return loginDays;
+    }
+
+    public int getConnectionTime() {
+        return connectionTime;
+    }
+
 }

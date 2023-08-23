@@ -6,8 +6,11 @@ import java.time.temporal.Temporal;
 public class Time {
 
     public static String timeLeftString(Temporal startInclusive, Temporal endExclusive) {
+        return durationString(Duration.between(startInclusive, endExclusive));
+    }
+
+    public static String durationString(Duration duration) {
         String timeLeft = "";
-        Duration duration = Duration.between(startInclusive, endExclusive);
 
         if (duration.toDays() > 1) {
             timeLeft = duration.toDays() + " Tage";

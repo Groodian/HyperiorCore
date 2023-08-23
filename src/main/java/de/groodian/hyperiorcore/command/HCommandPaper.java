@@ -25,7 +25,7 @@ public abstract class HCommandPaper<T extends CommandSender> implements CommandE
     private final String permission;
     private final List<HSubCommandPaper<? extends HCommandPaper<? extends CommandSender>, ? extends CommandSender>> hSubCommandPapers;
 
-    private HCommandManagerPaper HCommandManagerPaper;
+    private HCommandManagerPaper hCommandManagerPaper;
 
     public HCommandPaper(Class<T> clazz, String name, String description, Component prefix, String permission,
                          List<HSubCommandPaper<? extends HCommandPaper<? extends CommandSender>, ? extends CommandSender>> hSubCommandPapers) {
@@ -140,7 +140,7 @@ public abstract class HCommandPaper<T extends CommandSender> implements CommandE
 
     private boolean checkPermission(CommandSender sender, String permission) {
         if (sender instanceof Player player) {
-            if (HCommandManagerPaper.getPlugin().getUserManager().get(player.getUniqueId()).has(permission)) {
+            if (hCommandManagerPaper.getPlugin().getUserManager().get(player.getUniqueId()).has(permission)) {
                 return true;
             }
         } else if (sender instanceof ConsoleCommandSender) {
@@ -160,8 +160,8 @@ public abstract class HCommandPaper<T extends CommandSender> implements CommandE
         sender.sendMessage(prefix.append(Component.text(msg, color)));
     }
 
-    public void setCommandManager(HCommandManagerPaper HCommandManagerPaper) {
-        this.HCommandManagerPaper = HCommandManagerPaper;
+    public void setCommandManager(HCommandManagerPaper hCommandManagerPaper) {
+        this.hCommandManagerPaper = hCommandManagerPaper;
     }
 
     public String getName() {
