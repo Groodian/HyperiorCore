@@ -1,7 +1,8 @@
 package de.groodian.hyperiorcore.commands;
 
+import de.groodian.hyperiorcore.command.HArgument;
 import de.groodian.hyperiorcore.command.HCommandPaper;
-import de.groodian.hyperiorcore.command.HSubCommandPaper;
+import de.groodian.hyperiorcore.command.HTabCompleteType;
 import de.groodian.hyperiorcore.main.Main;
 import de.groodian.hyperiorcore.util.Task;
 import java.util.List;
@@ -16,32 +17,33 @@ public class RanksCommandPaper extends HCommandPaper<CommandSender> {
             .append(Component.text("Ranks", NamedTextColor.LIGHT_PURPLE))
             .append(Component.text("] ", NamedTextColor.GRAY));
 
-    protected final Main plugin;
-
     public RanksCommandPaper(Main plugin) {
         super(CommandSender.class, "hyperiorranks", "Edit ranks", PREFIX, "ranks.all",
-                List.of(new Info(), new Set(), new Remove(), new ListAll(), new GetOP()));
-        this.plugin = plugin;
+                List.of(new Info(plugin), new Set(plugin), new Remove(plugin), new ListAll(plugin), new GetOP()), List.of());
     }
 
     @Override
-    protected void onCall(CommandSender sender) {
+    protected void onCall(CommandSender sender, String[] args) {
     }
 
-    private static class Info extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
+    private static class Info extends HCommandPaper<CommandSender> {
 
-        public Info() {
-            super(RanksCommandPaper.class, CommandSender.class, "info", List.of("player"));
+        private final Main plugin;
+
+        public Info(Main plugin) {
+            super(CommandSender.class, "info", "Shows a players rank", PREFIX, null, List.of(),
+                    List.of(new HArgument("player", HTabCompleteType.PLAYER)));
+            this.plugin = plugin;
         }
 
         @Override
         public void onCall(CommandSender sender, String[] args) {
             sendMsg(sender, "Please wait, this can take a moment.", NamedTextColor.GRAY);
 
-            new Task(hCommand.plugin.getPlugin()) {
+            new Task(plugin) {
                 @Override
                 public void executeAsync() {
-                    cache.add(hCommand.plugin.getRanks().info(args[0]));
+                    cache.add(plugin.getRanks().info(args[0]));
                 }
 
                 @Override
@@ -52,20 +54,24 @@ public class RanksCommandPaper extends HCommandPaper<CommandSender> {
         }
     }
 
-    private static class Set extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
+    private static class Set extends HCommandPaper<CommandSender> {
 
-        public Set() {
-            super(RanksCommandPaper.class, CommandSender.class, "set", List.of("player", "rank"));
+        private final Main plugin;
+
+        public Set(Main plugin) {
+            super(CommandSender.class, "set", "Set a players rank", PREFIX, null, List.of(),
+                    List.of(new HArgument("player", HTabCompleteType.PLAYER), new HArgument("rank")));
+            this.plugin = plugin;
         }
 
         @Override
         public void onCall(CommandSender sender, String[] args) {
             sendMsg(sender, "Please wait, this can take a moment.", NamedTextColor.GRAY);
 
-            new Task(hCommand.plugin.getPlugin()) {
+            new Task(plugin) {
                 @Override
                 public void executeAsync() {
-                    cache.add(hCommand.plugin.getRanks().setRank(args[0], args[1]));
+                    cache.add(plugin.getRanks().setRank(args[0], args[1]));
                 }
 
                 @Override
@@ -76,20 +82,24 @@ public class RanksCommandPaper extends HCommandPaper<CommandSender> {
         }
     }
 
-    private static class Remove extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
+    private static class Remove extends HCommandPaper<CommandSender> {
 
-        public Remove() {
-            super(RanksCommandPaper.class, CommandSender.class, "remove", List.of("player"));
+        private final Main plugin;
+
+        public Remove(Main plugin) {
+            super(CommandSender.class, "remove", "Remove a players rank", PREFIX, null, List.of(),
+                    List.of(new HArgument("player", HTabCompleteType.PLAYER)));
+            this.plugin = plugin;
         }
 
         @Override
         public void onCall(CommandSender sender, String[] args) {
             sendMsg(sender, "Please wait, this can take a moment.", NamedTextColor.GRAY);
 
-            new Task(hCommand.plugin.getPlugin()) {
+            new Task(plugin) {
                 @Override
                 public void executeAsync() {
-                    cache.add(hCommand.plugin.getRanks().removeRank(args[0]));
+                    cache.add(plugin.getRanks().removeRank(args[0]));
                 }
 
                 @Override
@@ -100,20 +110,23 @@ public class RanksCommandPaper extends HCommandPaper<CommandSender> {
         }
     }
 
-    private static class ListAll extends HSubCommandPaper<RanksCommandPaper, CommandSender> {
+    private static class ListAll extends HCommandPaper<CommandSender> {
 
-        public ListAll() {
-            super(RanksCommandPaper.class, CommandSender.class, "list", List.of());
+        private final Main plugin;
+
+        public ListAll(Main plugin) {
+            super(CommandSender.class, "list", "List all players with a rank", PREFIX, null, List.of(), List.of());
+            this.plugin = plugin;
         }
 
         @Override
         public void onCall(CommandSender sender, String[] args) {
             sendMsg(sender, "Please wait, this can take a moment.", NamedTextColor.GRAY);
 
-            new Task(hCommand.plugin.getPlugin()) {
+            new Task(plugin) {
                 @Override
                 public void executeAsync() {
-                    cache.add(hCommand.plugin.getRanks().list());
+                    cache.add(plugin.getRanks().list());
                 }
 
                 @Override
@@ -124,16 +137,19 @@ public class RanksCommandPaper extends HCommandPaper<CommandSender> {
         }
     }
 
-    private static class GetOP extends HSubCommandPaper<RanksCommandPaper, Player> {
+    private static class GetOP extends HCommandPaper<CommandSender> {
 
         public GetOP() {
-            super(RanksCommandPaper.class, Player.class, "getop", List.of());
+            super(CommandSender.class, "getop", "Get OP on this server", PREFIX, null, List.of(), List.of());
         }
 
         @Override
-        public void onCall(Player player, String[] args) {
-            player.setOp(true);
-            sendMsg(player, "You are now OP on this server.", NamedTextColor.GREEN);
+        public void onCall(CommandSender sender, String[] args) {
+            Player player = castSender(Player.class, sender);
+            if (player != null) {
+                player.setOp(true);
+                sendMsg(player, "You are now OP on this server.", NamedTextColor.GREEN);
+            }
         }
     }
 

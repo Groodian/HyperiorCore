@@ -1,5 +1,6 @@
 package de.groodian.hyperiorcore.commands;
 
+import de.groodian.hyperiorcore.command.HCommand;
 import de.groodian.hyperiorcore.command.HCommandPaper;
 import de.groodian.hyperiorcore.main.Main;
 import java.util.List;
@@ -15,17 +16,17 @@ public class HelpCommandPaper extends HCommandPaper<CommandSender> {
     private final Main plugin;
 
     public HelpCommandPaper(Main plugin) {
-        super(CommandSender.class, "help", "", Component.empty(), List.of());
+        super(CommandSender.class, "help", "", Component.empty(), null, List.of(), List.of());
         this.plugin = plugin;
     }
 
     @Override
-    protected void onCall(CommandSender sender) {
+    protected void onCall(CommandSender sender, String[] args) {
         TextComponent.Builder msg = Component.text();
         msg.append(Component.text("HYPERIOR.DE", NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true));
         msg.appendNewline();
 
-        for (HCommandPaper<? extends CommandSender> hCommandPaper : plugin.getHCommandManagerPaper().getHCommands()) {
+        for (HCommand<? extends CommandSender, Main> hCommandPaper : plugin.getHCommandManagerPaper().getHCommands()) {
             if (hCommandPaper.getName().equals("help")) {
                 continue;
             }
