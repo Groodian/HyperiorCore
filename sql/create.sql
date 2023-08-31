@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS hyperior_mc.users (
         uuid                UUID NOT NULL PRIMARY KEY,
         name                VARCHAR(64) NOT NULL,
         rank                INTEGER NOT NULL,
-        level               INTEGER NOT NULL,
         total_xp            INTEGER NOT NULL,
         coins               INTEGER NOT NULL,
         daily_bonus         TIMESTAMP WITH TIME ZONE,
@@ -26,6 +25,33 @@ CREATE TABLE IF NOT EXISTS hyperior_mc.users (
         last_logout         TIMESTAMP WITH TIME ZONE,
         login_days          INTEGER NOT NULL,
         connection_time     INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hyperior_mc.minecraft_party (
+        uuid                UUID NOT NULL PRIMARY KEY,
+        points              INTEGER NOT NULL,
+        playtime            INTEGER NOT NULL,
+        games_played        INTEGER NOT NULL,
+        games_ended         INTEGER NOT NULL,
+        mini_games_played   INTEGER NOT NULL,
+        games_first         INTEGER NOT NULL,
+        games_second        INTEGER NOT NULL,
+        games_third         INTEGER NOT NULL,
+        games_fourth        INTEGER NOT NULL,
+        games_fifth         INTEGER NOT NULL,
+        mini_games_first    INTEGER NOT NULL,
+        mini_games_second   INTEGER NOT NULL,
+        mini_games_third    INTEGER NOT NULL,
+        mini_games_fourth   INTEGER NOT NULL,
+        mini_games_fifth    INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hyperior_mc.minecraft_party_records (
+        uuid                UUID NOT NULL,
+        name                VARCHAR(64) NOT NULL,
+        record              INTEGER NOT NULL,
+        achieved_at         TIMESTAMP WITH TIME ZONE NOT NULL,
+        PRIMARY KEY (uuid, name)
 );
 
 -- CREATE TABLE IF NOT EXISTS data (UUID VARCHAR(100), playername VARCHAR(100), logins INT(100), firstlogin VARCHAR(100), lastlogin VARCHAR(100), lastlogout VARCHAR(100), lastip VARCHAR(100), logindays INT(100), connectiontime BIGINT(100))

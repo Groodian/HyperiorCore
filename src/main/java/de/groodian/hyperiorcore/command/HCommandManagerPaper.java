@@ -11,7 +11,7 @@ public class HCommandManagerPaper extends HCommandManager<Main, HCommandPaper<?>
         super(plugin);
     }
 
-    public void registerCommand(JavaPlugin plugin, HCommandPaper hCommand) {
+    public void registerCommand(JavaPlugin plugin, HCommandPaper<?> hCommand) {
         PluginCommand pluginCommand = Objects.requireNonNull(plugin.getCommand(hCommand.getName()));
         pluginCommand.setExecutor(hCommand);
         pluginCommand.setTabCompleter(hCommand);

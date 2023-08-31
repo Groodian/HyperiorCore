@@ -38,11 +38,11 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setName(String name) {
-        return setName(LegacyComponentSerializer.legacySection().deserialize(name).decoration(TextDecoration.ITALIC, false));
+        return setName(LegacyComponentSerializer.legacySection().deserialize(name));
     }
 
     public ItemBuilder setName(Component name) {
-        itemMeta.displayName(name);
+        itemMeta.displayName(name.decoration(TextDecoration.ITALIC, false));
         return this;
     }
 
@@ -58,14 +58,18 @@ public class ItemBuilder {
         List<Component> newLore = new ArrayList<>();
 
         for (String currentLore : lore) {
-            newLore.add(LegacyComponentSerializer.legacySection().deserialize(currentLore).decoration(TextDecoration.ITALIC, false));
+            newLore.add(LegacyComponentSerializer.legacySection().deserialize(currentLore));
         }
 
         return setLore(newLore);
     }
 
     public ItemBuilder setLore(List<Component> lore) {
-        itemMeta.lore(lore);
+        List<Component> loreNoItalic = new ArrayList<>();
+        for (Component component : lore) {
+            loreNoItalic.add(component.decoration(TextDecoration.ITALIC, false));
+        }
+        itemMeta.lore(loreNoItalic);
         return this;
     }
 
@@ -82,7 +86,7 @@ public class ItemBuilder {
         List<Component> newLore = new ArrayList<>();
 
         for (String currentLore : additionalLore) {
-            newLore.add(LegacyComponentSerializer.legacySection().deserialize(currentLore).decoration(TextDecoration.ITALIC, false));
+            newLore.add(LegacyComponentSerializer.legacySection().deserialize(currentLore));
         }
 
         return addLore(newLore);
@@ -94,7 +98,10 @@ public class ItemBuilder {
         if (lore == null)
             lore = new ArrayList<>();
 
-        lore.addAll(additionalLore);
+        for (Component component : additionalLore) {
+            lore.add(component.decoration(TextDecoration.ITALIC, false));
+        }
+
         itemMeta.lore(lore);
         return this;
     }

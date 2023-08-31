@@ -6,14 +6,20 @@ import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import de.groodian.hyperiorcore.main.VelocityMain;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.text.Component;
 
 public abstract class HCommandVelocity<T extends CommandSource> extends HCommand<T, VelocityMain> implements SimpleCommand {
 
+    public HCommandVelocity(Class<T> clazz, String name, String description, Component prefix, String permission, long cooldownSeconds,
+                            List<HCommand<T, VelocityMain>> hSubCommands, List<HArgument> hArguments) {
+        super(clazz, name, description, prefix, permission, cooldownSeconds, hSubCommands, hArguments);
+    }
+
     public HCommandVelocity(Class<T> clazz, String name, String description, Component prefix, String permission,
                             List<HCommand<T, VelocityMain>> hSubCommands, List<HArgument> hArguments) {
-        super(clazz, name, description, prefix, permission, hSubCommands, hArguments);
+        super(clazz, name, description, prefix, permission, HCommand.COOLDOWN_SECONDS, hSubCommands, hArguments);
     }
 
     @Override
@@ -22,6 +28,14 @@ public abstract class HCommandVelocity<T extends CommandSource> extends HCommand
         String[] args = combineArgs(invocation.arguments());
 
         call((T) source, args);
+    }
+
+    @Override
+    protected UUID getUUID(T sender) {
+        if (sender instanceof Player player) {
+            return player.getUniqueId();
+        }
+        return null;
     }
 
     @Override

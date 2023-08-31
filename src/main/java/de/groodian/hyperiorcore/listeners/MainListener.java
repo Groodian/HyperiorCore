@@ -75,8 +75,6 @@ public class MainListener implements Listener {
 
         plugin.getPrefix().setPrefix(player);
         plugin.getPrefix().setListName(player);
-
-        plugin.getLevel().updateLevel(player);
     }
 
     @EventHandler
@@ -89,6 +87,7 @@ public class MainListener implements Listener {
         }
 
         plugin.getUserManager().logout(player.getUniqueId());
+        plugin.getHCommandManagerPaper().removePlayer(player.getUniqueId());
     }
 
     @EventHandler

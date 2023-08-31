@@ -3,6 +3,7 @@ package de.groodian.hyperiorcore.command;
 import de.groodian.hyperiorcore.main.Main;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -16,9 +17,14 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class HCommandPaper<T extends CommandSender> extends HCommand<T, Main> implements CommandExecutor, TabCompleter {
 
+    public HCommandPaper(Class<T> clazz, String name, String description, Component prefix, String permission, long cooldownSeconds,
+                         List<HCommand<T, Main>> hSubCommands, List<HArgument> hArguments) {
+        super(clazz, name, description, prefix, permission, cooldownSeconds, hSubCommands, hArguments);
+    }
+
     public HCommandPaper(Class<T> clazz, String name, String description, Component prefix, String permission,
                          List<HCommand<T, Main>> hSubCommands, List<HArgument> hArguments) {
-        super(clazz, name, description, prefix, permission, hSubCommands, hArguments);
+        super(clazz, name, description, prefix, permission, HCommand.COOLDOWN_SECONDS, hSubCommands, hArguments);
     }
 
     @Override
@@ -47,6 +53,13 @@ public abstract class HCommandPaper<T extends CommandSender> extends HCommand<T,
         return tapComplete;
     }
 
+    @Override
+    protected UUID getUUID(T sender) {
+        if (sender instanceof Player player) {
+            return player.getUniqueId();
+        }
+        return null;
+    }
 
     @Override
     protected boolean onPermissionCheck(CommandSender sender, String permission) {

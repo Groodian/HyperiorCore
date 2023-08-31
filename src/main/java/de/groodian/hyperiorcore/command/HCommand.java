@@ -3,6 +3,7 @@ package de.groodian.hyperiorcore.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,25 +11,28 @@ import net.kyori.adventure.text.format.TextColor;
 
 public abstract class HCommand<T, M> {
 
+    protected static final long COOLDOWN_SECONDS = 2;
+
     protected final Class<T> clazz;
     protected final String name;
     protected final String description;
     protected final Component prefix;
     protected final String permission;
+    protected final long cooldownSeconds;
     protected final List<HCommand<T, M>> hSubCommands;
     protected final List<HArgument> hArguments;
 
     protected HCommandManager<M, ?> hCommandManager;
     protected HCommand<T, M> hTopCommand;
 
-    public HCommand(Class<T> clazz, String name, String description, Component prefix, String permission,
-                    List<HCommand<T, M>> hSubCommands,
-                    List<HArgument> hArguments) {
+    public HCommand(Class<T> clazz, String name, String description, Component prefix, String permission, long cooldownSeconds,
+                    List<HCommand<T, M>> hSubCommands, List<HArgument> hArguments) {
         this.clazz = clazz;
         this.name = name;
         this.description = description;
         this.prefix = prefix;
         this.permission = permission;
+        this.cooldownSeconds = cooldownSeconds;
         this.hSubCommands = hSubCommands;
         this.hArguments = hArguments;
 
@@ -38,13 +42,27 @@ public abstract class HCommand<T, M> {
     }
 
     public void call(T sender, String[] args) {
+        if (hTopCommand == null) {
+            if (!hCommandManager.checkCall(getUUID(sender), cooldownSeconds)) {
+                sendMsg(sender, "This command is on cooldown, try again in a few seconds.", NamedTextColor.RED);
+                return;
+            }
+        }
+
         if (!checkPermission(sender, permission)) {
             return;
         }
 
         if (hSubCommands.isEmpty()) {
             if (clazz.isInstance(sender)) {
-                if (args.length == hArguments.size()) {
+                int hArgumentOptional = 0;
+                for (HArgument hArgument : hArguments) {
+                    if (hArgument.isOptional()) {
+                        hArgumentOptional++;
+                    }
+                }
+
+                if (args.length <= hArguments.size() && args.length >= hArguments.size() - hArgumentOptional) {
                     onCall(clazz.cast(sender), args);
                 } else {
                     sendUsage(sender);
@@ -78,6 +96,8 @@ public abstract class HCommand<T, M> {
             sendUsage(sender);
         }
     }
+
+    protected abstract UUID getUUID(T sender);
 
     protected abstract void onCall(T sender, String[] args);
 
@@ -130,12 +150,18 @@ public abstract class HCommand<T, M> {
             stringBuilder.append("/").append(commandStack);
             for (HArgument hArgument : hArguments) {
                 stringBuilder.append(" ");
+                if (hArgument.isOptional()) {
+                    stringBuilder.append("[");
+                }
                 if (hArgument.isMultipleWords()) {
                     stringBuilder.append("\"");
                 }
                 stringBuilder.append("<").append(hArgument.getName()).append(">");
                 if (hArgument.isMultipleWords()) {
                     stringBuilder.append("\"");
+                }
+                if (hArgument.isOptional()) {
+                    stringBuilder.append("]");
                 }
             }
 
@@ -144,7 +170,7 @@ public abstract class HCommand<T, M> {
             for (HCommand<T, M> hSubCommand : hSubCommands) {
                 usage.appendNewline()
                         .append(Component.text("   »", NamedTextColor.GOLD))
-                        .append(Component.text(" /" + hSubCommand.getName(), NamedTextColor.AQUA))
+                        .append(Component.text(" /" + commandStack + " " + hSubCommand.getName(), NamedTextColor.AQUA))
                         .append(Component.text(" - " + hSubCommand.getDescription(), NamedTextColor.GRAY));
             }
         }

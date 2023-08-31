@@ -9,7 +9,6 @@ public class User {
     private final UUID uuid;
     private final String name;
     private Rank rank;
-    private int level;
     private int totalXP;
     private int coins;
     private OffsetDateTime dailyBonus;
@@ -22,13 +21,12 @@ public class User {
     private int loginDays;
     private int connectionTime;
 
-    public User(UUID uuid, String name, Rank rank, int level, int totalXP, int coins, OffsetDateTime dailyBonus,
+    public User(UUID uuid, String name, Rank rank, int totalXP, int coins, OffsetDateTime dailyBonus,
                 OffsetDateTime dailyBonusVIP, UUID ban, int logins, OffsetDateTime firstLogin, OffsetDateTime lastLogin,
                 OffsetDateTime lastLogout, int loginDays, int connectionTime) {
         this.uuid = uuid;
         this.name = name;
         this.rank = rank;
-        this.level = level;
         this.totalXP = totalXP;
         this.coins = coins;
         this.dailyBonus = dailyBonus;
@@ -78,14 +76,6 @@ public class User {
 
     public void setRank(Rank rank) {
         this.rank = rank;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     public int getTotalXP() {

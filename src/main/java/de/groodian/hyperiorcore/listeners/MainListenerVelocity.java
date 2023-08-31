@@ -30,6 +30,7 @@ public class MainListenerVelocity {
         plugin.getServer().getScheduler().buildTask(plugin, () -> {
             Player player = e.getPlayer();
             plugin.getUserManager().logout(player.getUniqueId());
+            plugin.getHCommandManagerVelocity().removePlayer(player.getUniqueId());
             continuation.resume();
         }).schedule();
     }

@@ -1,6 +1,7 @@
 package de.groodian.hyperiorcore.gui;
 
 import de.groodian.hyperiorcore.util.ItemBuilder;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,9 +18,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class GUI implements InventoryHolder {
 
+    private static final Duration DEFAULT_DURATION = Duration.ofSeconds(1);
+
     protected final Inventory inventory;
 
-    protected final Map<UUID, GUIRunnable> guiRunnableMap;
+    protected final Map<UUID, GUIRunnableData> guiRunnableMap;
     protected Player player;
     protected Plugin plugin;
 
@@ -32,12 +35,13 @@ public abstract class GUI implements InventoryHolder {
 
     public abstract void onUpdate();
 
+
     protected void update() {
         onUpdate();
 
-        Iterator<Map.Entry<UUID, GUIRunnable>> iter = guiRunnableMap.entrySet().iterator();
+        Iterator<Map.Entry<UUID, GUIRunnableData>> iter = guiRunnableMap.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry<UUID, GUIRunnable> entry = iter.next();
+            Map.Entry<UUID, GUIRunnableData> entry = iter.next();
             boolean found = false;
 
             for (ItemStack itemStack : inventory.getContents()) {
@@ -70,12 +74,16 @@ public abstract class GUI implements InventoryHolder {
     }
 
     protected void putItem(ItemStack itemStack, int slot, GUIRunnable guiRunnable) {
+        putItem(itemStack, slot, guiRunnable, DEFAULT_DURATION);
+    }
+
+    protected void putItem(ItemStack itemStack, int slot, GUIRunnable guiRunnable, Duration duration) {
         UUID uuid = UUID.randomUUID();
         ItemStack newItemStack = new ItemBuilder(itemStack.clone()).addCustomData("gui", PersistentDataType.STRING, uuid.toString())
                 .build();
 
-        if (guiRunnable != null) {
-            guiRunnableMap.put(uuid, guiRunnable);
+        if (guiRunnable != null && duration != null) {
+            guiRunnableMap.put(uuid, new GUIRunnableData(guiRunnable, duration, null));
         }
 
         putItem(newItemStack, slot);
@@ -102,6 +110,10 @@ public abstract class GUI implements InventoryHolder {
     }
 
     protected void putItemDelayed(ItemStack itemStack, int slot, GUIRunnable guiRunnable, int delay) {
+        putItemDelayed(itemStack, slot, guiRunnable, DEFAULT_DURATION, delay);
+    }
+
+    protected void putItemDelayed(ItemStack itemStack, int slot, GUIRunnable guiRunnable, Duration duration, int delay) {
         new BukkitRunnable() {
             @Override
             public void run() {

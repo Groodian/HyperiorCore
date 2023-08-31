@@ -1,9 +1,9 @@
 package de.groodian.hyperiorcore.boards;
 
 import de.groodian.hyperiorcore.main.Main;
-import de.groodian.hyperiorcore.user.Level;
 import de.groodian.hyperiorcore.user.Rank;
 import de.groodian.hyperiorcore.user.User;
+import de.groodian.hyperiorcore.user.XP;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -92,7 +92,7 @@ public class Prefix {
                     .longPrefix()
                     .append(Component.text(player.getName()))
                     .append(Component.text(" [", NamedTextColor.GRAY))
-                    .append(Level.getFormattedLevel(user.getLevel()))
+                    .append(XP.getFormattedLevel(XP.getLevel(user.getTotalXP())))
                     .append(Component.text("]", NamedTextColor.GRAY)));
         } else {
             player.playerListName(Component.text(player.getName(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true));

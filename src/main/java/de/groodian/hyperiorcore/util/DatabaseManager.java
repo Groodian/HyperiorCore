@@ -32,7 +32,7 @@ public class DatabaseManager {
     /**
      * This method returns a new or reused connection and lock it.
      * If the DB operation is done use finish() to unlock the connection, that the connection can
-     * be reused or closed (depends on the amount of open connections). Otherwise the connection will never close or reused!
+     * be reused or closed (depends on the amount of open connections). Otherwise, the connection will never close or reused!
      */
     public synchronized DatabaseConnection getConnection() {
         try {
@@ -55,7 +55,7 @@ public class DatabaseManager {
         availableConnections.clear();
     }
 
-    protected void connectionFinished(DatabaseConnection connection) {
+    protected synchronized void connectionFinished(DatabaseConnection connection) {
         if (!availableConnections.offer(connection)) {
             System.out.println("\n\n\n!!! COULD NOT OFFER DATABASE CONNECTION !!!\n\n\n");
         }

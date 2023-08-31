@@ -1,6 +1,8 @@
 package de.groodian.hyperiorcore.gui;
 
 import de.groodian.hyperiorcore.util.ItemBuilder;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -60,11 +62,18 @@ public class GUIManager implements Listener {
         if (data == null)
             return;
 
-        GUIRunnable guiRunnable = gui.guiRunnableMap.get(UUID.fromString(data));
-        if (guiRunnable == null)
+        GUIRunnableData guiRunnableData = gui.guiRunnableMap.get(UUID.fromString(data));
+        if (guiRunnableData == null)
             return;
 
-        guiRunnable.run();
+        if (guiRunnableData.lastCalled != null) {
+            if (Duration.between(guiRunnableData.lastCalled, Instant.now()).compareTo(guiRunnableData.duration) < 0) {
+                return;
+            }
+        }
+
+        guiRunnableData.lastCalled = Instant.now();
+        guiRunnableData.guiRunnable.run();
     }
 
     @EventHandler
