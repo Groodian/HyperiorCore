@@ -55,7 +55,7 @@ public class DatabaseManager {
         availableConnections.clear();
     }
 
-    protected synchronized void connectionFinished(DatabaseConnection connection) {
+    protected void connectionFinished(DatabaseConnection connection) {
         if (!availableConnections.offer(connection)) {
             System.out.println("\n\n\n!!! COULD NOT OFFER DATABASE CONNECTION !!!\n\n\n");
         }

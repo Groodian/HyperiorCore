@@ -10,9 +10,9 @@ public class HCommandManagerVelocity extends HCommandManager<VelocityMain, HComm
         super(plugin);
     }
 
-    public void registerCommand(HCommandVelocity<?> hCommand) {
+    public void registerCommand(HCommandVelocity<?> hCommand, String... aliases) {
         CommandManager commandManager = plugin.getServer().getCommandManager();
-        CommandMeta commandMeta = commandManager.metaBuilder(hCommand.getName()).plugin(plugin).build();
+        CommandMeta commandMeta = commandManager.metaBuilder(hCommand.getName()).aliases(aliases).plugin(plugin).build();
         commandManager.register(commandMeta, hCommand);
         super.registerCommand(hCommand);
     }

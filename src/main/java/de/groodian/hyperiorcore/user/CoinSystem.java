@@ -82,7 +82,7 @@ public abstract class CoinSystem extends DatabaseTransaction {
     protected boolean addCoinsInDatabase(DatabaseConnection databaseConnection, Player player, int coins) {
         try {
             PreparedStatement ps = databaseConnection.getPreparedStatement(
-                    "UPDATE hyperior_mc.users SET coins = coins + ? WHERE uuid = ? AND coins + ? > 0");
+                    "UPDATE hyperior_mc.users SET coins = coins + ? WHERE uuid = ? AND coins + ? >= 0");
 
             ps.setInt(1, coins);
             ps.setObject(2, player.getUniqueId());

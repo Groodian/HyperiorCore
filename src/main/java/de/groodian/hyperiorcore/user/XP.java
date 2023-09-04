@@ -37,7 +37,13 @@ public class XP extends DatabaseTransaction {
         user.setTotalXP(user.getTotalXP() + xp);
 
         for (int iLevel = currentLevel + 1; iLevel <= nextLevel; iLevel++) {
-            player.sendMessage("§7[§eLevel§7] §aDu bist nun §6Level " + getFormattedLevel(iLevel) + "§a.");
+            player.sendMessage(Component.text("[", NamedTextColor.GRAY)
+                    .append(Component.text("Level", NamedTextColor.YELLOW))
+                    .append(Component.text("] ", NamedTextColor.GRAY))
+                    .append(Component.text("Du bist nun ", NamedTextColor.GREEN))
+                    .append(Component.text("Level ", NamedTextColor.GOLD))
+                    .append(getFormattedLevel(iLevel))
+                    .append(Component.text(".", NamedTextColor.GREEN)));
             new HSound(Sound.BLOCK_NOTE_BLOCK_BASS).playFor(player);
             plugin.getPrefix().setListName(player);
         }

@@ -1,9 +1,14 @@
 package de.groodian.hyperiorcore.util;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
+import java.util.Date;
 
 public class Time {
+
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     public static String timeLeftString(Temporal startInclusive, Temporal endExclusive) {
         return durationString(Duration.between(startInclusive, endExclusive));
@@ -51,6 +56,10 @@ public class Time {
         }
 
         return timeLeft;
+    }
+
+    public static String formatDate(OffsetDateTime offsetDateTime) {
+        return dateFormatter.format(Date.from(offsetDateTime.toInstant()));
     }
 
 }

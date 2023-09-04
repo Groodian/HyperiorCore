@@ -9,7 +9,7 @@ public class DatabaseManagerPaper extends DatabaseManager {
         super(hostname, port, database, username, password);
     }
 
-    public synchronized void transaction(List<DatabaseTransaction> databaseTransactions, DatabaseTransactionCallback callback) {
+    public void transaction(List<DatabaseTransaction> databaseTransactions, DatabaseTransactionCallback callback) {
         new Task(HyperiorCore.getPaper()) {
             @Override
             public void executeAsync() {

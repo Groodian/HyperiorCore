@@ -21,7 +21,7 @@ public class MinecraftPartyStatsGUI extends GUI {
     private final MinecraftPartyStats.Player stats;
 
     public MinecraftPartyStatsGUI(User showUser, MinecraftPartyStats.Player stats) {
-        super(Component.text("Minecraft Party Stats für ")
+        super(Component.text("Stats für ")
                 .append(Component.text(showUser.getName(), NamedTextColor.GOLD))
                 .append(Component.text(":")), 45);
         this.showUser = showUser;
@@ -41,8 +41,8 @@ public class MinecraftPartyStatsGUI extends GUI {
                 loreComponent("Platz", stats.rank()),
                 loreComponent("Punkte", stats.points()),
                 loreComponent("Spielzeit", Time.durationStringNoDay(Duration.ofSeconds(stats.playtime()))),
-                loreComponent("Platz", stats.gamesPlayed()),
-                loreComponent("Platz", stats.gamesEnded()),
+                loreComponent("Gespielte Spiele", stats.gamesPlayed()),
+                loreComponent("Beendete Spiele", stats.gamesEnded()),
                 Component.empty(),
                 loreComponent("Erster", stats.gamesFirst()),
                 loreComponent("Zweiter", stats.gamesSecond()),
@@ -104,20 +104,20 @@ public class MinecraftPartyStatsGUI extends GUI {
         builder.append(Component.text("» ", NamedTextColor.DARK_GRAY));
         builder.append(Component.text(name, NamedTextColor.GRAY));
         if (map != null) {
-            builder.append(Component.text("(", NamedTextColor.GRAY));
+            builder.append(Component.text(" (", NamedTextColor.GRAY));
             builder.append(Component.text(map, NamedTextColor.YELLOW));
             builder.append(Component.text(")", NamedTextColor.GRAY));
         }
         builder.append(Component.text(": ", NamedTextColor.GRAY));
 
         for (MinecraftPartyStats.Record record : stats.records()) {
-            if (record.name().equals(recordName + map)) {
+            if (record.name().equals(recordName + (map == null ? "" : map))) {
                 if (time) {
                     builder.append(Component.text(convertTime(record.record()), NamedTextColor.GREEN));
                 } else {
                     builder.append(Component.text(record.record(), NamedTextColor.GREEN));
                 }
-                builder.append(Component.text(" (" + ")", NamedTextColor.GRAY));
+                builder.append(Component.text(" (" + Time.formatDate(record.achievedAt()) + ")", NamedTextColor.GRAY));
                 return builder.build();
             }
         }
