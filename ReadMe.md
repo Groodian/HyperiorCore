@@ -4,7 +4,7 @@ It is not meant to be run without the required dependencies of other plugins in 
 
 This repository contains the code of the plugin `Hyperior Core`.
 
-This plugin was developed for Paper Version 1.19.4 and may not work on other versions.
+This plugin was developed for Paper Version 1.20.1 and may not work on other versions.
 
 This plugin contains various utilities used in all the other plugins in this project.
 Features include a scoreboard, title, prefix, tab list, permissions, command, GUI, stats, hologram, NPC, level, coin, and particle system.

@@ -19,17 +19,15 @@ public class NPCPacketReader extends PacketReader {
     @Override
     protected void readPacket(Packet<?> packet) {
         if (packet instanceof ServerboundInteractPacket serverboundInteractPacket) {
-            if (serverboundInteractPacket.getActionType() == ServerboundInteractPacket.ActionType.INTERACT) {
-                for (SpawnAble spawnAble : plugin.getSpawnAbleManager().getSpawnAbleList()) {
-                    if (spawnAble instanceof NPC npc) {
-                        if (npc.getEntityId() == serverboundInteractPacket.getEntityId()) {
-                            new BukkitRunnable() {
-                                @Override
-                                public void run() {
-                                    npc.onInteract(player);
-                                }
-                            }.runTask(plugin);
-                        }
+            for (SpawnAble spawnAble : plugin.getSpawnAbleManager().getSpawnAbleList()) {
+                if (spawnAble instanceof NPC npc) {
+                    if (npc.getEntityId() == serverboundInteractPacket.getEntityId()) {
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                npc.onInteract(player);
+                            }
+                        }.runTask(plugin);
                     }
                 }
             }
