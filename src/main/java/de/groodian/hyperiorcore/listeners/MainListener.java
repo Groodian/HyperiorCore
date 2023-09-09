@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -119,4 +120,10 @@ public class MainListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void handleBlockBreak(BlockBreakEvent e) {
+        plugin.getGlowingBlock().remove(e.getBlock().getLocation());
+    }
+
 }

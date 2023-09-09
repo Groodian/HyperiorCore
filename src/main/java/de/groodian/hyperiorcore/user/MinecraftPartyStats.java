@@ -127,7 +127,8 @@ public class MinecraftPartyStats extends DatabaseTransaction {
                                 (recordGame.mustBeHigher ? "<" : ">") + " ?");
                         psRec.setInt(1, recordGame.record);
                         psRec.setObject(2, recordGame.achievedAt);
-                        psRec.setInt(3, recordGame.record);
+                        psRec.setObject(3, player.uuid);
+                        psRec.setInt(4, recordGame.record);
                         psRec.executeUpdate();
                     }
                 } else {

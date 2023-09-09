@@ -14,6 +14,7 @@ import de.groodian.hyperiorcore.spawnable.SpawnAbleManager;
 import de.groodian.hyperiorcore.user.Ranks;
 import de.groodian.hyperiorcore.user.UserManager;
 import de.groodian.hyperiorcore.util.DatabaseManagerPaper;
+import de.groodian.hyperiorcore.util.GlowingBlock;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -37,6 +38,7 @@ public class Main extends JavaPlugin {
     private Prefix prefix;
     private HScoreboard scoreboard;
     private GUIManager defaultGUIManager;
+    private GlowingBlock glowingBlock;
 
     public void onEnable() {
         Mode.setModeType(ModeType.PAPER);
@@ -57,6 +59,7 @@ public class Main extends JavaPlugin {
         prefix = new Prefix(this);
         scoreboard = new HScoreboard(this);
         defaultGUIManager = new GUIManager(GUI.class, this);
+        glowingBlock = new GlowingBlock(this);
 
         hCommandManagerPaper.registerCommand(this, new RanksCommandPaper(this));
         hCommandManagerPaper.registerCommand(this, new HelpCommandPaper(this));
@@ -146,6 +149,10 @@ public class Main extends JavaPlugin {
 
     public GUIManager getDefaultGUIManager() {
         return defaultGUIManager;
+    }
+
+    public GlowingBlock getGlowingBlock() {
+        return glowingBlock;
     }
 
     public Plugin getPlugin() {
