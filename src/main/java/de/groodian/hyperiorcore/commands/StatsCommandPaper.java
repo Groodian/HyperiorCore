@@ -53,6 +53,10 @@ public class StatsCommandPaper extends HCommandPaper<Player> {
 
             @Override
             public void executeSyncOnFinish() {
+                if (cache.size() != 2) {
+                    return;
+                }
+
                 plugin.getDefaultGUIManager()
                         .open(player, new StatsGUI((User) cache.get(0), (MinecraftPartyStats.Player) cache.get(1)));
             }

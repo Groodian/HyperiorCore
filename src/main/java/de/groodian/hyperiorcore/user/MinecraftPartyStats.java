@@ -123,12 +123,13 @@ public class MinecraftPartyStats extends DatabaseTransaction {
                 if (recordFound) {
                     if (updateRecord) {
                         PreparedStatement psRec = databaseConnection.getPreparedStatement(
-                                "UPDATE hyperior_mc.minecraft_party_records SET record = ?, achieved_at = ? WHERE uuid = ? AND record " +
+                                "UPDATE hyperior_mc.minecraft_party_records SET record = ?, achieved_at = ? WHERE uuid = ? AND name = ? AND record " +
                                 (recordGame.mustBeHigher ? "<" : ">") + " ?");
                         psRec.setInt(1, recordGame.record);
                         psRec.setObject(2, recordGame.achievedAt);
                         psRec.setObject(3, player.uuid);
-                        psRec.setInt(4, recordGame.record);
+                        psRec.setString(4, recordGame.name);
+                        psRec.setInt(5, recordGame.record);
                         psRec.executeUpdate();
                     }
                 } else {
@@ -215,7 +216,7 @@ public class MinecraftPartyStats extends DatabaseTransaction {
             }
 
             PreparedStatement ps2 = databaseConnection.getPreparedStatement(
-                    "SELECT RANK() OVER (ORDER BY points DESC) rank, points, playtime, games_played, games_ended, mini_games_played, games_first, games_second, games_third, games_fourth, games_fifth, mini_games_first, mini_games_second, mini_games_third, mini_games_fourth, mini_games_fifth FROM hyperior_mc.minecraft_party WHERE uuid = ?");
+                    "SELECT rank, points, playtime, games_played, games_ended, mini_games_played, games_first, games_second, games_third, games_fourth, games_fifth, mini_games_first, mini_games_second, mini_games_third, mini_games_fourth, mini_games_fifth FROM hyperior_mc.minecraft_party INNER JOIN(SELECT RANK() OVER (ORDER BY points DESC) rank, uuid as rank_uuid FROM hyperior_mc.minecraft_party) rank_table ON rank_uuid = uuid WHERE uuid = ?");
             ps2.setObject(1, uuid);
             ResultSet rs2 = ps2.executeQuery();
 
